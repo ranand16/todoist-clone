@@ -1,0 +1,378 @@
+body, html, #root{
+    width: 100%;
+    height: 100%;
+}
+#signInWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30%;
+    height: 100%;
+    position: relative;
+    margin: 0 auto;
+}
+#signInWrapper > form{
+    padding: 5rem 2rem;
+    border: 0.2rem solid #aaa;
+    border-radius: 0.5rem; 
+}
+
+/* Desktops and laptops ----------- */
+@media only screen  
+and (min-width : 1224px) {
+/* Styles */
+
+}
+
+/* Large screens ----------- */
+@media only screen  
+and (min-width : 1824px) {
+/* Styles */
+}
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) {
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+/* Smartphones (landscape) ----------- */
+@media only screen 
+and (min-width : 321px) {
+/* Styles */
+}
+
+/* Smartphones (portrait) ----------- */
+@media only screen 
+and (max-width : 320px) {
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) {
+/* Styles */
+}
+
+/* iPads (landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : landscape) {
+/* Styles */
+    #signInWrapper{
+        width: 50%;
+    }
+}
+
+/* iPads (portrait) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) {
+/* Styles */
+    #signInWrapper{
+        width: 50%;
+    }
+}
+/**********
+iPad 3
+**********/
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : landscape) 
+and (-webkit-min-device-pixel-ratio : 2) {
+/* Styles */
+    #signInWrapper{
+        width: 50%;
+    }
+}
+
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) 
+and (-webkit-min-device-pixel-ratio : 2) {
+/* Styles */
+}
+
+/* iPhone 4 ----------- */
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) 
+and (orientation : landscape) 
+and (-webkit-min-device-pixel-ratio : 2) {
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) 
+and (orientation : portrait) 
+and (-webkit-min-device-pixel-ratio : 2) {
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+/* iPhone 5 ----------- */
+@media only screen 
+and (min-device-width: 320px) 
+and (max-device-height: 568px) 
+and (orientation : landscape) 
+and (-webkit-device-pixel-ratio: 2){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+@media only screen 
+and (min-device-width: 320px) 
+and (max-device-height: 568px) 
+and (orientation : portrait) 
+and (-webkit-device-pixel-ratio: 2){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+/* iPhone 6, 7, 8 ----------- */
+@media only screen 
+and (min-device-width: 375px) 
+and (max-device-height: 667px) 
+and (orientation : landscape) 
+and (-webkit-device-pixel-ratio: 2){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+}
+
+@media only screen 
+and (min-device-width: 375px) 
+and (max-device-height: 667px) 
+and (orientation : portrait) 
+and (-webkit-device-pixel-ratio: 2){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+/* iPhone 6+, 7+, 8+ ----------- */
+@media only screen 
+and (min-device-width: 414px) 
+and (max-device-height: 736px) 
+and (orientation : landscape) 
+and (-webkit-device-pixel-ratio: 2){
+/* Styles */
+    #signInWrapper{
+        width: 50%;
+    }
+}
+
+@media only screen 
+and (min-device-width: 414px) 
+and (max-device-height: 736px) 
+and (orientation : portrait) 
+and (-webkit-device-pixel-ratio: 2){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+/* iPhone X ----------- */
+@media only screen 
+and (min-device-width: 375px) 
+and (max-device-height: 812px) 
+and (orientation : landscape) 
+and (-webkit-device-pixel-ratio: 3){
+/* Styles */
+
+    #signInWrapper{
+        width: 50%;
+    }
+}
+
+@media only screen 
+and (min-device-width: 375px) 
+and (max-device-height: 812px) 
+and (orientation : portrait) 
+and (-webkit-device-pixel-ratio: 3){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+/* iPhone XS Max, XR ----------- */
+@media only screen 
+and (min-device-width: 414px) 
+and (max-device-height: 896px) 
+and (orientation : landscape) 
+and (-webkit-device-pixel-ratio: 3){
+/* Styles */
+    #signInWrapper{
+        width: 50%;
+    }
+}
+
+@media only screen 
+and (min-device-width: 414px) 
+and (max-device-height: 896px) 
+and (orientation : portrait) 
+and (-webkit-device-pixel-ratio: 3){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+/* Samsung Galaxy S3 ----------- */
+@media only screen 
+and (min-device-width: 320px) 
+and (max-device-height: 640px) 
+and (orientation : landscape) 
+and (-webkit-device-pixel-ratio: 2){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+@media only screen 
+and (min-device-width: 320px) 
+and (max-device-height: 640px) 
+and (orientation : portrait) 
+and (-webkit-device-pixel-ratio: 2){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+/* Samsung Galaxy S4 ----------- */
+@media only screen 
+and (min-device-width: 320px) 
+and (max-device-height: 640px) 
+and (orientation : landscape) 
+and (-webkit-device-pixel-ratio: 3){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+@media only screen 
+and (min-device-width: 320px) 
+and (max-device-height: 640px) 
+and (orientation : portrait) 
+and (-webkit-device-pixel-ratio: 3){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+/* Samsung Galaxy S5 ----------- */
+@media only screen 
+and (min-device-width: 360px) 
+and (max-device-height: 640px) 
+and (orientation : landscape) 
+and (-webkit-device-pixel-ratio: 3){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
+
+@media only screen 
+and (min-device-width: 360px) 
+and (max-device-height: 640px) 
+and (orientation : portrait) 
+and (-webkit-device-pixel-ratio: 3){
+/* Styles */
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+}
