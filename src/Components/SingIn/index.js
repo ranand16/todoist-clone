@@ -1,11 +1,12 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { withRouter } from 'react-router-dom';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { withFirebase } from '../Firebase';
 
-function App() {
-    const onSignIn = (e) => {
-        e.preventDefault()
-        console.log("Submit now.");
+function SignIn(){
+
+    const onSignIn = () => {
+        console.log("sunmit now.")
     }
 
     return (
@@ -37,8 +38,7 @@ function App() {
             </div> */}
             {/* <a style={{position: "absolute", bottom: "10px"}} href="https://www.freepik.com/free-photos-vectors/background">Background vector created by starline - www.freepik.com</a>     */}
         </>
-
-    );
+    )
 }
 
-export default App;
+export default withFirebase(withRouter(SignIn))
