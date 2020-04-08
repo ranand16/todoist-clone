@@ -41,13 +41,23 @@ class Firebase {
         });
     }
 
-    // doCreateUserWithEmailAndPassword = (email, password) => this.auth.createUserWithEmailAndPassword(email, password);
-    // getUserdetails = () => this.auth.currentUser;
-    // doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password);
-    // doSignOut = () => this.auth.signOut();
-    // doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
-    // doPasswordUpdateViaEmail = (emailCode, password) => this.auth.confirmPasswordReset(emailCode, password);
-    // createUserWithPersonalInfo = (email, emailVerified, phoneNumber, password, displayName) => this.auth().createUser(email, emailVerified, phoneNumber, password, displayName);
+    doCreateUserWithEmailAndPassword = (email, password) => this.auth.createUserWithEmailAndPassword(email, password);
+    getUserdetails = () => this.auth.currentUser;
+    doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password);
+    doSignOut = () => this.auth.signOut();
+    doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
+    doPasswordUpdateViaEmail = (emailCode, password) => this.auth.confirmPasswordReset(emailCode, password);
+    createUserWithPersonalInfo = (email, emailVerified, phoneNumber, password, displayName) => this.auth().createUser(email, emailVerified, phoneNumber, password, displayName);
+    handleFirebaseError = (e) =>{
+      console.log(e)
+      switch(e.code){
+        case "auth/operation-not-allowed": 
+          console.log("The given sign in provider is disabled for server. Please contact adminstrator.")
+          break;
+        default: console.log("There was a problem in processing the request from the server side. Try again later.")
+      }
+    }
+
 }
 
 export default Firebase;
