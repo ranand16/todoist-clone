@@ -2,6 +2,41 @@ body, html, #root{
     width: 100%;
     height: 100%;
 }
+button{
+    outline: none;
+    border: none;
+}
+input{
+    -webkit-box-shadow: none !important;
+            box-shadow: none !important;
+    text-decoration: none !important;
+}
+button::-moz-selection {
+    /* border: none; */
+    outline: none;
+}
+button:active, button::selection, button:visited, button:focus, button:focus-within, button:hover {
+    /* border: none; */
+    outline: none;
+}
+input[type=text]:active, input[type=text]:focus, input[type=text]:visited,  input[type=text]:hover,
+input[type=password]:active, input[type=password]:focus, input[type=password]:visited,  input[type=password]:hover {
+    outline: none;
+    border: none;
+    background: #eee;
+}
+input[type = "text"], input[type = "password"] {
+    border: none;
+    border-radius: 4px;
+    background: #eee;
+    -webkit-box-shadow: inset 0px 0 0.2rem 0px grey;
+            box-shadow: inset 0px 0 0.2rem 0px grey;
+    padding: 0.35rem 0.5rem;
+    font-size: 1rem;
+}
+input, select {
+    outline: none;
+}
 #signInWrapper{
     display: flex;
     justify-content: center;

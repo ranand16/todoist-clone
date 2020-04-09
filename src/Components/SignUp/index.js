@@ -6,8 +6,8 @@ import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 class SignUp extends Component {
     constructor(props){
         super(props)
-        let signUpEmail = null;
-        let signUpPassword = null;
+        this.signUpEmail = null;
+        this.signUpPassword = null;
         console.log(props)
     }
     // Ra129238928 // ranand16@gmail.com
@@ -34,11 +34,11 @@ class SignUp extends Component {
                             <br/>
                             <FormGroup>
                                 <Label for="signUpEmail">Email</Label>
-                                <Input type="text" name="email" className="form-field" id="signUpEmail" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required/>
+                                <Input type="text" name="email" className="form-field" id="signUpEmail" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" placeholder="Email" required/>
                             </FormGroup>
                             <FormGroup>
                                 <Label for="signUpPassword">Password</Label>
-                                <Input type="password" name="pwd" className="form-field" id="signUpPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required/>
+                                <Input type="password" name="pwd" className="form-field" id="signUpPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" placeholder="Password" required/>
                             </FormGroup>
                             
                             <br/>
