@@ -30,7 +30,7 @@ class SignIn extends Component{
             <>
                 <div id="signInWrapper">
                     {/* <div style={{ position: "absolute", margin: "0 auto" }}> */}
-                        <Form classNAme={"order-0"} onSubmit={this.onSignIn} style={{ width: "100%" }}>
+                        <Form className={"order-0"} onSubmit={this.onSignIn} style={{ width: "100%" }}>
                             <h3>Log In</h3>
                             <br/>
                             <FormGroup className={"mb-2 mr-sm-2 mb-sm-0"}>
