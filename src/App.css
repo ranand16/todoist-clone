@@ -15,9 +15,10 @@ button::-moz-selection {
     /* border: none; */
     outline: none;
 }
-button:active, button::selection, button:visited, button:focus, button:focus-within, button:hover {
-    /* border: none; */
+button:active, button::selection, button:visited, button:focus, button:focus-within, button:hover,
+a:active, a::selection, a:visited, a:focus, a:focus-within, a:hover {
     outline: none;
+    text-decoration: none;
 }
 input[type=text]:active, input[type=text]:focus, input[type=text]:visited,  input[type=text]:hover,
 input[type=password]:active, input[type=password]:focus, input[type=password]:visited,  input[type=password]:hover {
@@ -51,7 +52,34 @@ input, select {
     border: 0.2rem solid #aaa;
     border-radius: 0.5rem; 
 }
+.navBar{
+    display: flex;
+    background: #8A2BE2;
+    box-shadow: 2px 4px 10px #aaa;
+    /* background-image: linear-gradient(to right, #43e97b 0%, #38f9d7 100%); */
 
+}
+.navBar a{
+    /* background: #777; */
+    flex: 1;
+    color: #eee;
+    padding: 0.5rem 0.6rem;
+}
+.navBar > #dashboardNav{
+    font-weight: bold;
+}
+.navBar > #searchNav {
+    flex: 15
+}
+.navBar input {
+    width: 100%;
+    border: 1px #aaa solid;
+    border-radius: 0.25rem;
+}
+.navBar > #logoutNav{
+    flex: 3;
+    text-align: right;
+}
 /* Desktops and laptops ----------- */
 @media only screen  
 and (min-width : 1224px) {
