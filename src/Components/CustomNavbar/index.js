@@ -1,15 +1,16 @@
-import React , { useState } from 'react';
-// import { Nav, NavItem, NavLink, Navbar, NavbarBrand, NavbarToggler, Collapse, Form, FormGroup, NavbarText, Button, Input } 
+import React from 'react';
 import { Form } from 'reactstrap';
-// import {material, octicons} from 'styled-icons'
 
 const CustomNavbar = (props) => {
-  // const [isOpen, setIsOpen] = useState(false);
-
-  // const toggle = () => setIsOpen(!isOpen);
   const onSearch = (e) => {
     console.log("On search submit.")
   }
+
+  const onLogout = (e) => {
+    console.log(props.firebase)
+    props.firebase.doSignOut();
+  }
+
   return (
       <nav className={"navBar"}>
         <a id="dashboardNav" href="/dashboard">Todoist</a>
@@ -18,7 +19,7 @@ const CustomNavbar = (props) => {
         <Form id="searchNav" onSubmit={onSearch} inline>
           <input id="searchNavValue" />
         </Form>
-        <a id="logoutNav" href="/dashboard">Logout</a>
+        <a id="logoutNav" href="/" onClick={onLogout}>Logout</a>
       </nav>
   );
 }

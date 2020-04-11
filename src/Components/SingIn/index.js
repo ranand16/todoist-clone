@@ -19,7 +19,10 @@ class SignIn extends Component{
         console.log(this.signInPassword)
         this.props.firebase.doSignInWithEmailAndPassword(this.signInEmail, this.signInPassword).then((res)=>{
             console.log(res)
-            
+            this.props.history.push({
+                pathname: '/dashboard',
+                params: {response:res,edit:true}
+            })
         }).catch((e)=>{
             this.props.firebase.handleFirebaseError(e);
         })

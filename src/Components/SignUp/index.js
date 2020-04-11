@@ -18,10 +18,13 @@ class SignUp extends Component {
         console.log(e, this.props, document.getElementById('signUpEmail').value, document.getElementById('signUpPassword').value) 
         this.props.firebase.doCreateUserWithEmailAndPassword(this.signUpEmail, this.signUpPassword).then((response)=>{
             console.log(response)
+            this.props.history.push({
+                pathname: '/dashboard',
+                params: {response:response,edit:true}
+            })
         }).catch((e)=>{
             this.props.firebase.handleFirebaseError(e);
         })
-        
     }
 
     render(){
