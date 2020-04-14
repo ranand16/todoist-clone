@@ -15,16 +15,22 @@ button::-moz-selection {
     /* border: none; */
     outline: none;
 }
+button::-moz-selection, a::-moz-selection {
+    outline: none;
+    text-decoration: none;
+}
 button:active, button::selection, button:visited, button:focus, button:focus-within, button:hover,
 a:active, a::selection, a:visited, a:focus, a:focus-within, a:hover {
     outline: none;
     text-decoration: none;
 }
 input[type=text]:active, input[type=text]:focus, input[type=text]:visited,  input[type=text]:hover,
-input[type=password]:active, input[type=password]:focus, input[type=password]:visited,  input[type=password]:hover {
+input[type=password]:active, input[type=password]:focus, input[type=password]:visited,  input[type=password]:hover,
+input:-internal-autofill-selected, input:-webkit-autofill {
+
     outline: none;
     border: none;
-    background: #eee;
+    background: #eee !important;
 }
 input[type = "text"], input[type = "password"] {
     border: none;
@@ -39,9 +45,15 @@ input, select {
     outline: none;
 }
 #signInWrapper{
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
     width: 30%;
     height: 100%;
     position: relative;
@@ -53,15 +65,19 @@ input, select {
     border-radius: 0.5rem; 
 }
 .navBar{
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
     background: #8A2BE2;
-    box-shadow: 2px 4px 10px #aaa;
-    /* background-image: linear-gradient(to right, #43e97b 0%, #38f9d7 100%); */
+    -webkit-box-shadow: 2px 4px 10px #aaa;
+            box-shadow: 2px 4px 10px #aaa;
 
 }
 .navBar a{
     /* background: #777; */
-    flex: 1;
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
     color: #eee;
     padding: 0.5rem 0.6rem;
 }
@@ -69,7 +85,9 @@ input, select {
     font-weight: bold;
 }
 .navBar > #searchNav {
-    flex: 15
+    -webkit-box-flex: 15;
+        -ms-flex: 15;
+            flex: 15
 }
 .navBar input {
     width: 100%;
@@ -77,8 +95,33 @@ input, select {
     border-radius: 0.25rem;
 }
 .navBar > #logoutNav{
-    flex: 3;
+    -webkit-box-flex: 3;
+        -ms-flex: 3;
+            flex: 3;
     text-align: right;
+}
+.contents-container{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+.contents-container a{
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    visibility: hidden;
+    padding: 0.5rem 0.6rem;
+}
+.contents-container .contents{
+    width: 100%;
+    -webkit-box-flex: 15;
+        -ms-flex: 15;
+            flex: 15;
+}
+.contents-container #lastSpan{
+    -webkit-box-flex: 3;
+        -ms-flex: 3;
+            flex: 3;
 }
 /* Desktops and laptops ----------- */
 @media only screen  
@@ -105,12 +148,25 @@ and (max-device-width : 480px) {
     #signInWrapper > form{    
         border: none;
     }
+    .contents-container a{
+        display: none;
+    }
 }
 
 /* Smartphones (landscape) ----------- */
 @media only screen 
 and (min-width : 321px) {
 /* Styles */
+}
+
+/* Smartphones (landscape) ----------- */
+@media only screen 
+and (min-width : 321px) 
+and (max-width : 768px) {
+/* Styles */
+    .contents-container a{
+        display: none;
+    }
 }
 
 /* Smartphones (portrait) ----------- */
@@ -124,6 +180,9 @@ and (max-width : 320px) {
     #signInWrapper > form{    
         border: none;
     }
+    .contents-container a{
+        display: none;
+    }
 }
 
 /* iPads (portrait and landscape) ----------- */
@@ -131,6 +190,9 @@ and (max-width : 320px) {
 and (min-device-width : 768px) 
 and (max-device-width : 1024px) {
 /* Styles */
+    .contents-container a{
+        display: none;
+    }
 }
 
 /* iPads (landscape) ----------- */
