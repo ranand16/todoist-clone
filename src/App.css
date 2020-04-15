@@ -164,9 +164,45 @@ and (min-width : 321px) {
 and (min-width : 321px) 
 and (max-width : 768px) {
 /* Styles */
+
+}
+@media only screen 
+and (min-width : 321px) 
+and (max-width : 480px) {
+/* Styles */
     .contents-container a{
         display: none;
     }
+    #signInWrapper{
+        width: 100%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+    .contents-container a{
+        display: none;
+    }
+
+}
+@media only screen 
+and (min-width : 480px) 
+and (max-width : 767px) {
+/* Styles */
+    .contents-container a{
+        display: none;
+    }
+    #signInWrapper{
+        width: 70%;
+    }
+
+    #signInWrapper > form{    
+        border: none;
+    }
+    .contents-container a{
+        display: none;
+    }
+
 }
 
 /* Smartphones (portrait) ----------- */
@@ -191,7 +227,10 @@ and (min-device-width : 768px)
 and (max-device-width : 1024px) {
 /* Styles */
     .contents-container a{
-        display: none;
+        display: none;  
+    }
+    #signInWrapper{
+        width: 60%;
     }
 }
 
