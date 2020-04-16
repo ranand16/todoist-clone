@@ -16,7 +16,10 @@ import { createFirestoreInstance } from 'redux-firestore';
 
 let fbInstance = new Firebase();
 let initialState = {};
-let store = createStore(allReducers, initialState, compose(applyMiddleware(thunk.withExtraArgument({getFirebase}))));
+let store = createStore(allReducers, initialState, compose(applyMiddleware(thunk.withExtraArgument({getFirebase})),
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  )  
+);
 
 const rrfProps = {
   firebase: fbInstance.firebase,
@@ -33,6 +36,6 @@ ReactDOM.render(
           <App />
         </BrowserRouter>
       </ReactReduxFirebaseProvider>
-    </FirebaseContext.Provider>, document.getElementById('root')
+    </FirebaseContext.Provider>
   </Provider>, document.getElementById('root')
 );
