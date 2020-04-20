@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom'
-// import { withFirebase } from '../../Firebase';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
-// import createUser from '../../Actions/createUser'
-// import { connect } from 'react-redux';
+import fetchUserDetails from '../../Actions/fetchUserDetails'
+import { connect } from 'react-redux';
 import { withFirebase } from '../../Firebase';
+import creatNewUser from '../../Utility/createuser'
 
 class SignUp extends Component {
     constructor(props){
@@ -16,24 +16,14 @@ class SignUp extends Component {
         console.log(props)
     }
     onSignUp = (e) => {
+        e.preventDefault();
         this.signUpDetails["signUpEmail"] = document.getElementById('signUpEmail').value
         this.signUpDetails["signUpPassword"] = document.getElementById('signUpPassword').value
-        e.preventDefault();
-        console.log(this.signUpDetails)
-        // this.props.signup(this.signUpDetails, this.props.firebase, this.props.history);
-        this.props.firebase.doCreateUserWithEmailAndPassword(this.signUpDetails["signUpEmail"], this.signUpDetails["signUpPassword"]).then((response)=>{
-            console.log(response.user)
-            const createUserDetails = this.props.firebase.functions.httpsCallable('createUserDetails');
-            const res = createUserDetails({ uid: response["user"]["uid"], email: response["user"]["email"] });
-            console.log(res);
-        }).then((response)=>{
-            // this.props.history.push({
-            //     pathname: '/dashboard',
-            //     params: {response:response,edit:true}
-            // })
-        }).catch((e)=>{
-            this.props.firebase.handleFirebaseError(e);
-        })
+        this.signUpDetails["isNewUser"] = true
+        this.props.fetchUserDetails(this.signUpDetails, this.props.firebase, creatNewUser).then((res)=>{
+            console.log(res)
+            this.props.history.push({ pathname: '/dashboard' })
+        });
     }
 
     render(){
@@ -65,10 +55,10 @@ class SignUp extends Component {
     }
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//     return {
-//         signup: (newUser, fb, history) => dispatch(createUser(newUser, fb, history))
-//     }
-// }
+const mapDispatchToProps = (dispatch) => {
+    return {
+        fetchUserDetails: (newUser, fb, creatNewUser) => dispatch(fetchUserDetails(newUser, fb, creatNewUser))
+    }
+}
 
-export default withFirebase(withRouter(SignUp));
+export default withFirebase(connect(null, mapDispatchToProps)(withRouter(SignUp)));

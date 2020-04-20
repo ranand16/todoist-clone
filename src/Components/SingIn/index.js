@@ -1,31 +1,29 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
-import { withFirebase } from '../Firebase';
+import { withFirebase } from '../../Firebase';
+import fetchUserDetails from '../../Actions/fetchUserDetails'
+import { connect } from 'react-redux';
 
 class SignIn extends Component{
     constructor(props){
         super(props)
         console.log(props)
-        this.signInEmail = null;
-        this.signInPassword = null;
+        this.signInDetails = {
+            signInEmail: null,
+            signInPassword: null
+        }
     }
 
     onSignIn = (e) => {
         e.preventDefault();
-        this.signInEmail = document.getElementById('signInEmail').value;
-        this.signInPassword = document.getElementById('signInPassword').value;
-        console.log(this.signInEmail)
-        console.log(this.signInPassword)
-        this.props.firebase.doSignInWithEmailAndPassword(this.signInEmail, this.signInPassword).then((res)=>{
+        this.signInDetails["signInEmail"] = document.getElementById('signInEmail').value;
+        this.signInDetails["signInPassword"] = document.getElementById('signInPassword').value;
+        this.signInDetails["isNewUser"] = false;
+        this.props.fetchUserDetails(this.signInDetails, this.props.firebase).then((res)=>{
             console.log(res)
-            this.props.history.push({
-                pathname: '/dashboard',
-                params: {response:res,edit:true}
-            })
-        }).catch((e)=>{
-            this.props.firebase.handleFirebaseError(e);
-        })
+            this.props.history.push({ pathname: '/dashboard' })
+        });
     }
 
     render(){
@@ -62,4 +60,10 @@ class SignIn extends Component{
     }
 }
 
-export default withFirebase(withRouter(SignIn));
+const mapDispatchToProps = (dispatch) => {
+    return {
+        fetchUserDetails: (newUser, fb) => dispatch(fetchUserDetails(newUser, fb))
+    }
+}
+
+export default withFirebase(connect(null, mapDispatchToProps)(withRouter(SignIn)));

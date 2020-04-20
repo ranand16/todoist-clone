@@ -11,12 +11,12 @@ require('events').EventEmitter.defaultMaxListeners = 15;
 // const storage = admin.storage().bucket();
 
 /**
- * The following funciton will run just after the response from registeration is received.
- * This function will create an instance of user details containing details like First name, last name, default projects.
- */
-exports.createUserDetails = functions.https.onCall(async (request, response)=>{
-    console.log(firestore, request);
-    return firestore.collection("userDetails").doc(request.uid).set({
+ * 
+ * @param {*} request
+ * request object contains uid and user email after a successful sign up in frontend
+ */ 
+function creatNewUser(request){
+    return {
         firstName: null,
         lastName: null,
         userEmail: request.email,
@@ -34,13 +34,24 @@ exports.createUserDetails = functions.https.onCall(async (request, response)=>{
                 }
             }
         ]
+    }
+}
 
-    }).then((res)=>{
-        return response.status(200).send(res)
+/**
+ * The following funciton will run just after the response from registeration is received.
+ * This function will create an instance of user details containing details like First name, last name, default projects.
+ */
+exports.createUserDetails = functions.https.onCall((data, context)=>{
+    console.log(firestore, data);
+    const newUser = creatNewUser(data)
+    return firestore.collection("userDetails").doc(data.uid).set(newUser).then((res)=>{
+        console.log("res", res)
+        return {res, newUser};
     }).catch((e)=>{
-        return response.status(500).send(e)
+        return e
     })
 });
+
 // Take the text parameter passed to this HTTP endpoint and insert it into the
 // Realtime Database under the path /messages/:pushId/original
 exports.addMessage = functions.https.onRequest(async (req, res) => {
