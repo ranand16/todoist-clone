@@ -18,6 +18,7 @@ export const firebaseApp = app;
 class Firebase {
     constructor(){
         app.initializeApp(config);
+        console.log(app);
         this.auth = app.auth();
         this.storage = app.storage();
         this.firestore = app.firestore();

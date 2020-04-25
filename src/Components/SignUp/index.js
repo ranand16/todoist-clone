@@ -61,4 +61,5 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default withFirebase(connect(null, mapDispatchToProps)(withRouter(SignUp)));
+export default connect(null, mapDispatchToProps)(withRouter(SignUp));
+// export default withFirebase(connect(null, mapDispatchToProps)(withRouter(SignUp)));
