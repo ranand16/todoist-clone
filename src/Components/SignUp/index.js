@@ -3,8 +3,9 @@ import { withRouter } from 'react-router-dom'
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import fetchUserDetails from '../../Actions/fetchUserDetails'
 import { connect } from 'react-redux';
-import { withFirebase } from '../../Firebase';
+// import { withFirebase } from '../../Firebase';
 import creatNewUser from '../../Utility/createuser'
+import { withFirestore } from 'react-redux-firebase'
 
 class SignUp extends Component {
     constructor(props){
@@ -61,5 +62,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(withRouter(SignUp));
-// export default withFirebase(connect(null, mapDispatchToProps)(withRouter(SignUp)));
+export default withFirestore(connect(null, mapDispatchToProps)(withRouter(SignUp)));

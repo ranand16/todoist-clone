@@ -105,11 +105,26 @@ input, select {
     display: -ms-flexbox;
     display: flex;
 }
-.contents-container a{
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
-    visibility: hidden;
+.dashboard_leftpane{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-box-flex: 3 3;
+        -ms-flex: 3 3;
+            flex: 3 3;
+
+    padding: 0.5rem 1.8rem;
+}
+.dashboard_rightpane{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-box-flex: 3;
+        -ms-flex: 3;
+            flex: 3;
+
     padding: 0.5rem 0.6rem;
 }
 .contents-container .contents{
@@ -118,11 +133,15 @@ input, select {
         -ms-flex: 15;
             flex: 15;
 }
-.contents-container #lastSpan{
-    -webkit-box-flex: 3;
-        -ms-flex: 3;
-            flex: 3;
-}
+/* .contents-container a{
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    visibility: hidden;
+    padding: 0.5rem 0.6rem;
+} */
+
+
 /* Desktops and laptops ----------- */
 @media only screen  
 and (min-width : 1224px) {

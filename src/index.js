@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter }  from 'react-router-dom';
 import App from './Components/App/App';
 import './App.css'
-// import Firebase, { FirebaseContext } from './Firebase';
+// import Firebase, { FirebaseContext, config } from './Firebase';
 // import Firebase, { config } from './Firebase/firebase'
 import { createStore, applyMiddleware, compose } from 'redux'
 import { Provider } from 'react-redux'
@@ -14,7 +14,7 @@ import firebase from "./Firebase/firebaseRedux";
 import { ReactReduxFirebaseProvider } from 'react-redux-firebase';
 import { createFirestoreInstance } from 'redux-firestore';
 
-console.log(firebase)
+// const FirebaseInstance = new Firebase();
 const rrfConfig = {
   userProfile: 'userDetails',
   useFirestoreForProfile: true, // Firestore for Profile instead of Realtime DB
@@ -23,7 +23,7 @@ const rrfConfig = {
 
 let initialState = {};
 let store = createStore(allReducers, initialState, compose(
-    applyMiddleware(thunk),
+    applyMiddleware(thunk.withExtraArgument()),
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
   )
 );

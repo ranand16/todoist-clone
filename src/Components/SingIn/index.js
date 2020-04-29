@@ -4,6 +4,7 @@ import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { withFirebase } from '../../Firebase';
 import fetchUserDetails from '../../Actions/fetchUserDetails'
 import { connect } from 'react-redux';
+import { withFirestore } from 'react-redux-firebase'
 
 class SignIn extends Component{
     constructor(props){
@@ -66,5 +67,9 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
+const mapStateToProps = (state) => {
+    console.log(state)
+}
+
 // export default withFirebase(connect(null, mapDispatchToProps)(withRouter(SignIn)));
-export default connect(null, mapDispatchToProps)(withRouter(SignIn));
+export default withFirestore(connect(null, mapDispatchToProps)(withRouter(SignIn)));

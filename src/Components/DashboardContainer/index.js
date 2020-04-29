@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import CustomNavbar from '../CustomNavbar';
 import Dashboard from '../Dashboard';
+import LeftPane from '../LeftPane';
+import RightPane from '../RightPane';
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { firestoreConnect } from 'react-redux-firebase'
@@ -12,20 +14,17 @@ class DashboardContainer extends Component {
         this.state = {
 
         }
-        console.log(props, this.state)
     }
 
     render(){
-        console.log(this.state)
+        console.log(this.props.todosList)
         return (
             <>
                 <CustomNavbar firebase={this.props.firebase}/>
                 <div className={"contents-container"}>
-                    <a>Todoist</a>
-                    <a>About</a>
-                    <a>Github</a>
+                    <LeftPane />
                     <Dashboard />
-                    <a id="lastSpan">Logout</a>
+                    <RightPane />
                 </div>
             </>
         )
@@ -34,5 +33,5 @@ class DashboardContainer extends Component {
 }
 
 export default compose(firestoreConnect((props) => [{ collection: 'todos' }]), 
-    connect((state, props) => ({ todosList: state.firestore.data.todos }))
+    connect((state, props) => ({ todosList: state.firestore.ordered.todos }))
 )(withRouter(DashboardContainer));
