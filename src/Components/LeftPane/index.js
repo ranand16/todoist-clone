@@ -1,24 +1,30 @@
 import React from 'react';
-import { compose } from 'redux';
-import { withFirestore } from 'react-redux-firebase';
-import { withHandlers } from "recompose"
-
 const LeftPane = (props) => {
+    const selectProj = (e)=>{
+        console.log(e.currentTarget.getAttribute("name"));
+        props.switchProject(e.currentTarget.getAttribute("name")?e.currentTarget.getAttribute("name"):"Today")
+    }
+    console.log(props)
+    if(props["projects"] && props["projects"].length>0) {   
+        console.log(props["projects"])
+        return (
+            <div className={"dashboard_leftpane"}>
+                {
+                    props["projects"].map((project, i)=>{
+                        console.log(project)
+                        const key = project["projectId"]
+                        return ( <div key={key} name={key} onClick={selectProj} className={"projTitleLeftPane"} ><span name={key}>{key}</span></div>)
+                    })
+                }
+            </div>
+        );
+    } else {
+        console.log("in else")
+    }
     return (
         <div className={"dashboard_leftpane"}>
-            <button onClick={props.addNewTask({ MyTask: "My new task for now." })}>Add</button>
+            <div name={"invisible"} style={{visibility: "hidden"}} className={"projTitleLeftPane"} key={"invisible"} ><span>{"invisible"}</span></div>
         </div>
     );
 }
-
-const enhance = compose(
-    withFirestore,
-    withHandlers ({
-        addNewTask: props => (MyTask) => {
-        console.log(MyTask)
-        return props.firestore.add({ collection: 'todos' }, MyTask)
-      }
-    })
-  )
-
-export default enhance(LeftPane)
+export default LeftPane

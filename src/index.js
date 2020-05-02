@@ -23,7 +23,7 @@ const rrfConfig = {
 
 let initialState = {};
 let store = createStore(allReducers, initialState, compose(
-    applyMiddleware(thunk.withExtraArgument()),
+    applyMiddleware(thunk),
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
   )
 );
