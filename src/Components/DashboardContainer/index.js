@@ -5,6 +5,7 @@ import Dashboard from '../Dashboard';
 import LeftPane from '../LeftPane';
 import RightPane from '../RightPane';
 import AddTaskModal from '../AddTask'
+import fetchProjects from '../../Actions/fetchProjects'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { firestoreConnect, withFirestore } from 'react-redux-firebase'
@@ -22,26 +23,66 @@ class DashboardContainer extends Component {
 
     componentDidMount(){
         console.log(this.props)
+        const { profile, firebase } = this.props;
+        const profileProjs = profile["projects"];
+        console.log(profileProjs);
+        let projectDocIds = [];
+        profileProjs.map((project)=>{
+            if(project["projectId"] === "Today") { 
+                this.setState({selectedProj: project["id"]});
+                return null;
+            }
+            if(project["projectId"] === "Inbox") return null;
+            projectDocIds.push(project["id"])
+        })
+        this.props.fetchProjects(projectDocIds, firebase).then((res)=>{
+            console.log(this.state)
+        })
     }
 
-    switchProject = (proj) => {
-        console.log(proj)
-        if(proj && proj!==this.state.selectedProj){
-            console.log("hello therw")
-            this.setState({ selectedProj: proj })
+    switchProject = async (id, projectName) => {
+        console.log(id, projectName, this.props)
+        const { fetchProject } = this.props;
+        const { selectedProj } = this.state;
+        if(id && id !== selectedProj){
+            this.setState({ selectedProj: id })
         }
     }
 
     toggleNewTaskModal = () =>{
         this.setState(prevState => ({ newTaskModalIsOpen: !prevState.newTaskModalIsOpen }));
-    }
+    } 
 
     addNewTask = async (task) => {
-        const { addNewPersonalTask, addNewTask, firebase, profile } = this.props;
+        const { addNewPersonalTask, addNewTask, firebase, profile, projects } = this.props;
         const { selectedProj } = this.state;
         const currentUser = firebase.auth().currentUser
-        const selected = {"Today":0, "Inbox": 1};
-        console.log(currentUser);
+        const selected = {"":"Today", "":"Inbox"};
+        const profileProjs = profile["projects"].filter((proj)=>{
+            if(proj["projectId"] === "Inbox" || proj["projectId"] === "Today") return proj
+            return null
+        });
+        console.log(selectedProj, [...projects, ...profileProjs], currentUser);
+        const allProjects = [...projects, ...profileProjs];
+        // allProjects.
+
+        const selectedProject = allProjects.find((proj)=>{
+            console.log(proj["id"], selectedProj)
+            return proj["id"] === selectedProj
+        })
+        if(selectedProject["projectId"]==="Inbox" || selectedProject["projectId"]==="Today"){
+            const newUser = Object.assign({}, profile);
+            newUser["projects"][selected[selectedProj]]["sections"].push(task)
+            delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
+            await addNewPersonalTask(currentUser.uid, newUser)
+        } else {
+
+        }
+        this.toggleNewTaskModal();
+        // addNewTask(task).then((res)=>{
+        //     this.toggleNewTaskModal();
+        // });
+        return 
         if(!currentUser) return
         if(!currentUser.uid) return 
         switch(selectedProj){
@@ -49,27 +90,32 @@ class DashboardContainer extends Component {
             case "Inbox":
                 const newUser = Object.assign({}, profile);
                 newUser["projects"][selected[selectedProj]]["sections"].push(task)
-                console.log(currentUser.uid, newUser)
                 delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
                 await addNewPersonalTask(currentUser.uid, newUser)
-
             break;
             default:
             break;
         }
         this.toggleNewTaskModal();
-        // addNewTask(task).then((res)=>{
-        //     this.toggleNewTaskModal();
-        // });
+        addNewTask(task).then((res)=>{
+            this.toggleNewTaskModal();
+        });
     }
 
     render(){
-        console.log(this.props,this.state)
+        console.log(this.props, this.state)
         const { selectedProj, newTaskModalIsOpen } = this.state
-        console.log(this.props.firebase.auth().currentUser);
-        const { profile } = this.props;
-        const profileProjs = profile["projects"];
-        const projects = profileProjs?[...profileProjs]:null
+        const { profile, projects } = this.props;
+        const profileProjs = profile["projects"].filter((proj)=>{
+            if(proj["projectId"] === "Inbox" || proj["projectId"] === "Today") return proj
+            return null
+        });
+        const projectToDisplay = projects.find((proj)=>{
+            console.log(proj["id"], selectedProj)
+            return proj["id"] === selectedProj
+        })
+        const dispProjects = [...profileProjs, ...projects]
+        console.log(projects, dispProjects)
         return (
             <>
                 <AddTaskModal 
@@ -80,13 +126,14 @@ class DashboardContainer extends Component {
                 <CustomNavbar firebase={this.props.firebase}/>
                 <div className={"contents-container"}>
                     <LeftPane 
-                        projects={projects}
+                        projects={dispProjects}
                         switchProject={this.switchProject}
                     />
                     <Dashboard 
                         profile={profile} 
                         toggleNewTaskModal={this.toggleNewTaskModal} 
                         selectedProj={selectedProj}
+                        projectToDisplay={projectToDisplay}
                     />
                     <RightPane />
                 </div>
@@ -95,19 +142,27 @@ class DashboardContainer extends Component {
     }
 }
 
+const mapStateToProps = (state, props) =>{ 
+    console.log(state, props)
+    return {
+        profile: state.firebase.profile,
+        fetchProjects: async (projectDocIds, fb) => props.dispatch(fetchProjects(projectDocIds, fb)), 
+        projects: state.projectsReducer["projects"].map((proj)=>{
+            console.log(proj.data())
+            return proj.data()
+        })
+    }
+}
+
 const highOrderWrap = compose(
     withFirestore,
     withHandlers({ 
-        addNewTask: props => async (newTodo) => props.firestore.add({ collection: 'todos' }, newTodo), 
-        addNewPersonalTask: props => async (userDocId, usersDetail) => props.firestore.collection('userDetails').doc(userDocId).set(usersDetail)
-        // addNewPersonalTask: props => async (userDocId, usersDetail) => props.firestore.collection('userDetails').doc(userDocId).set(usersDetail)
+        addNewTask: props => async (newTodo) => props.firestore.add({ collection: 'projects' }, newTodo), 
+        addNewPersonalTask: props => async (userDocId, usersDetail) => props.firestore.collection('userDetails').doc(userDocId).set(usersDetail),
     }),
-    firestoreConnect((props) => [{ collection: 'todos' }]), 
+    // firestoreConnect((props) => [{ collection: 'projects' }]), 
     withRouter,
-    connect((state, props) => ({ 
-        profile: state.firebase.profile,
-        todosList: state.firestore.ordered.todos 
-    }))
+    connect(mapStateToProps)
 );
 
 export default highOrderWrap(DashboardContainer);

@@ -1,7 +1,16 @@
-// const initialState = {};
+let init = {
+    projects: []
+}
+const projectsReducer = (state=init, action) => {
+    console.log(action)
+    switch(action.type){
+        case "FETCH_PROJECTS":
+            return {
+                projects: action.response
+            }
+        default: 
+    }
+    return state 
+}
 
-// let projectReducer = (state = initialState, action) => {
-//     return state
-// }
-
-// export default projectReducer
+export default projectsReducer

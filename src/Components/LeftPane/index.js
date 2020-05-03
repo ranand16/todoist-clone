@@ -1,8 +1,8 @@
 import React from 'react';
 const LeftPane = (props) => {
     const selectProj = (e)=>{
-        console.log(e.currentTarget.getAttribute("name"));
-        props.switchProject(e.currentTarget.getAttribute("name")?e.currentTarget.getAttribute("name"):"Today")
+        console.log(e.currentTarget.getAttribute("name"), e.currentTarget.getAttribute("project"));
+        props.switchProject(e.currentTarget.getAttribute("name"), e.currentTarget.getAttribute("project"))
     }
     console.log(props)
     if(props["projects"] && props["projects"].length>0) {   
@@ -12,8 +12,8 @@ const LeftPane = (props) => {
                 {
                     props["projects"].map((project, i)=>{
                         console.log(project)
-                        const key = project["projectId"]
-                        return ( <div key={key} name={key} onClick={selectProj} className={"projTitleLeftPane"} ><span name={key}>{key}</span></div>)
+                        const key = project["id"]
+                        return ( <div key={key} name={key} project={project["projectId"]} onClick={selectProj} className={"projTitleLeftPane"} ><span name={key}>{project['projectId']}</span></div>)
                     })
                 }
             </div>
