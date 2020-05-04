@@ -61,7 +61,7 @@ class DashboardContainer extends Component {
     } 
 
     addNewTask = async (task) => {
-        const { addNewPersonalTask, addNewTask, firebase, profile } = this.props;
+        const { addNewPersonalTask, addNewTaskToProj, firebase, profile } = this.props;
         const { selectedProj, selectedProjStructure } = this.state;
         const currentUser = firebase.auth().currentUser
         const selected = {"Today":1, "Inbox": 0};
@@ -73,7 +73,9 @@ class DashboardContainer extends Component {
             delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
             await addNewPersonalTask(currentUser.uid, newUser)
         } else {
-
+            console.log("a non Today/Inbox ", task, selectedProjStructure["id"])
+            // return
+            if(selectedProjStructure["id"]) await addNewTaskToProj(selectedProjStructure["id"], task)
         }
         this.toggleNewTaskModal(null);
     }
@@ -125,7 +127,6 @@ const mapStateToProps = (state, props) =>{
         profile: state.firebase.profile,
         fetchProjects: async (projectDocIds, fb) => props.dispatch(fetchProjects(projectDocIds, fb)), 
         projects: state.projectsReducer["projects"].map((proj)=>{
-            console.log(proj.data())
             return proj.data()
         })
     }
@@ -133,11 +134,16 @@ const mapStateToProps = (state, props) =>{
 
 const highOrderWrap = compose(
     withFirestore,
-    withHandlers({ 
-        addNewTask: props => async (newTodo) => props.firestore.add({ collection: 'projects' }, newTodo), 
-        addNewPersonalTask: props => async (userDocId, usersDetail) => props.firestore.collection('userDetails').doc(userDocId).set(usersDetail),
+    firestoreConnect((props) => {
+        console.log(props)
+        return [{ collection: 'projects' }]
     }),
-    // firestoreConnect((props) => [{ collection: 'projects' }]), 
+    withHandlers({ 
+        addNewTaskToProj: props => async (projectId, task) => props.firestore.collection('projects').doc(projectId).update({
+            sections: props.firebase.firestore.FieldValue.arrayUnion(task)
+        }),
+        addNewPersonalTask: props => async (userDocId, usersDetail) => props.firestore.collection('userDetails').doc(userDocId).set(usersDetail),
+    }), 
     withRouter,
     connect(mapStateToProps)
 );

@@ -7,8 +7,11 @@ const fetchProjects = (projectIds, fb) => {
     const _firestoreRef = _firebaseRef.firestore();
     return async (dispatch) => {
         console.log(projectIds, _firestoreRef)
-        const projectRes = await _firestoreRef.collection("projects").where('id', 'in', projectIds).get()
-        dispatch({ type: "FETCH_PROJECTS", response: projectRes.docs })
+        _firestoreRef.collection("projects").where('id', 'in', projectIds).onSnapshot((projectRes)=>{
+            console.log(projectRes)
+            dispatch({ type: "FETCH_PROJECTS", response: projectRes.docs })
+        })
+        
     }
 }
 export default fetchProjects;
