@@ -8,18 +8,18 @@ class Dashboard extends Component {
     }
 
     render() {
-        const { profile, projects, selectedProj, projectToDisplay } = this.props
-        console.log(this.props, selectedProj, projects, projectToDisplay)
+        const { selectedProj, projectToDisplay } = this.props
+        console.log(this.props, selectedProj, projectToDisplay)
         // if(!projectToDisplay) return <div></div>
         return(
             <div className={"contents"}>
                 <div>
-                    {<span><h2>{selectedProj}</h2></span>}<br/>
+                    {<span><h2>{projectToDisplay?projectToDisplay["projectId"]:""}</h2></span>}<br/>
                     {projectToDisplay?projectToDisplay.sections.map((proj, i)=>{
                         console.log(proj)
                         return <span key={proj["task"]?proj["task"]:i}><h4>{proj["task"]}</h4></span>
                     }):null}
-                    <span><button onClick={()=>{this.props.toggleNewTaskModal()}}>Add</button></span>
+                    <span><button onClick={()=>{this.props.toggleNewTaskModal(projectToDisplay)}}>Add</button></span>
                 </div>
             </div> 
         )

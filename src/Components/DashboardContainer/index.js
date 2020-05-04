@@ -17,7 +17,9 @@ class DashboardContainer extends Component {
         super(props);
         this.state = {
             selectedProj: "Today",
-            newTaskModalIsOpen: false
+            project: null, // will be used while creating a new task for a project
+            newTaskModalIsOpen: false,
+            profileProjects: []
         }
     }
 
@@ -49,57 +51,31 @@ class DashboardContainer extends Component {
         }
     }
 
-    toggleNewTaskModal = () =>{
-        this.setState(prevState => ({ newTaskModalIsOpen: !prevState.newTaskModalIsOpen }));
+    /**
+     * project will have the structure for the project. 
+     * if project is not present set selected proj as null
+     */
+    toggleNewTaskModal = (project) =>{
+        console.log(project)
+        this.setState(prevState => ({ newTaskModalIsOpen: !prevState.newTaskModalIsOpen, selectedProjStructure: project }));
     } 
 
     addNewTask = async (task) => {
-        const { addNewPersonalTask, addNewTask, firebase, profile, projects } = this.props;
-        const { selectedProj } = this.state;
+        const { addNewPersonalTask, addNewTask, firebase, profile } = this.props;
+        const { selectedProj, selectedProjStructure } = this.state;
         const currentUser = firebase.auth().currentUser
-        const selected = {"":"Today", "":"Inbox"};
-        const profileProjs = profile["projects"].filter((proj)=>{
-            if(proj["projectId"] === "Inbox" || proj["projectId"] === "Today") return proj
-            return null
-        });
-        console.log(selectedProj, [...projects, ...profileProjs], currentUser);
-        const allProjects = [...projects, ...profileProjs];
-        // allProjects.
-
-        const selectedProject = allProjects.find((proj)=>{
-            console.log(proj["id"], selectedProj)
-            return proj["id"] === selectedProj
-        })
-        if(selectedProject["projectId"]==="Inbox" || selectedProject["projectId"]==="Today"){
+        const selected = {"Today":1, "Inbox": 0};
+        console.log(selectedProjStructure);
+        if(selectedProjStructure["projectId"]==="Inbox" || selectedProjStructure["projectId"]==="Today"){
             const newUser = Object.assign({}, profile);
-            newUser["projects"][selected[selectedProj]]["sections"].push(task)
+            console.log(newUser)
+            newUser["projects"][selected[selectedProjStructure["projectId"]]]["sections"].push(task)
             delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
             await addNewPersonalTask(currentUser.uid, newUser)
         } else {
 
         }
-        this.toggleNewTaskModal();
-        // addNewTask(task).then((res)=>{
-        //     this.toggleNewTaskModal();
-        // });
-        return 
-        if(!currentUser) return
-        if(!currentUser.uid) return 
-        switch(selectedProj){
-            case "Today":
-            case "Inbox":
-                const newUser = Object.assign({}, profile);
-                newUser["projects"][selected[selectedProj]]["sections"].push(task)
-                delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
-                await addNewPersonalTask(currentUser.uid, newUser)
-            break;
-            default:
-            break;
-        }
-        this.toggleNewTaskModal();
-        addNewTask(task).then((res)=>{
-            this.toggleNewTaskModal();
-        });
+        this.toggleNewTaskModal(null);
     }
 
     render(){
@@ -110,12 +86,12 @@ class DashboardContainer extends Component {
             if(proj["projectId"] === "Inbox" || proj["projectId"] === "Today") return proj
             return null
         });
-        const projectToDisplay = projects.find((proj)=>{
+        const dispProjects = [...profileProjs, ...projects]
+        const projectToDisplay = dispProjects.find((proj)=>{
             console.log(proj["id"], selectedProj)
             return proj["id"] === selectedProj
         })
-        const dispProjects = [...profileProjs, ...projects]
-        console.log(projects, dispProjects)
+        console.log(projects, dispProjects, projectToDisplay)
         return (
             <>
                 <AddTaskModal 
@@ -132,6 +108,7 @@ class DashboardContainer extends Component {
                     <Dashboard 
                         profile={profile} 
                         toggleNewTaskModal={this.toggleNewTaskModal} 
+                        projects={dispProjects}
                         selectedProj={selectedProj}
                         projectToDisplay={projectToDisplay}
                     />
