@@ -13,7 +13,7 @@ const AddProjectModal = (props) => {
 
     const addProject = () => {
       if(project==="") return; // guarding
-      props.addNewProject({project});
+      props.addNewProject(project);
     }
 
     return (

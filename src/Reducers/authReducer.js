@@ -1,12 +1,14 @@
 let init = {
-    user:[]
+    user:[],
+    uid: null
 }
-const authReducer = (state=init, action) => {
+const authReducer = (state=init, action, uid) => {
     // console.log(action)
     switch(action.type){
         case "FETCH_USER_DETAILS":
             return {
-                user: action.newUser
+                user: action.newUser["data"],
+                uid: action.newUser["uid"]
             }
         default: 
     }

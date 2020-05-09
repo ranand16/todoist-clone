@@ -28,10 +28,9 @@ class DashboardContainer extends Component {
     }
 
     componentDidMount(){
-        const { profile, firebase, firestore, uid } = this.props;
+        const { profile, firebase, firestore, uid, profile2 } = this.props;
         firestore.setListener({ collection: 'userDetails', doc: uid })
-        console.log(this.props)
-        const profileProjs = profile["projects"];
+        const profileProjs = profile2?profile2[uid]?profile2[uid]["projects"]:profile["projects"]:profile["projects"];
         profileProjs.map((project)=>{
             if(project["projectId"] === "Today") { 
                 this.setState({selectedProj: project["id"]});
@@ -86,10 +85,11 @@ class DashboardContainer extends Component {
             newUser["projects"][selected[selectedProjStructure["projectId"]]]["sections"].push(task)
             delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
             await addNewPersonalTask(currentUser.uid, newUser)
+            this.toggleNewTaskModal(null);
         } else {
             if(selectedProjStructure["id"]) await addNewTaskToProj(selectedProjStructure["id"], task)
+            this.toggleNewTaskModal(null);
         }
-        this.toggleNewTaskModal(null);
     }
 
     addNewProject = async (project) => {
@@ -101,23 +101,26 @@ class DashboardContainer extends Component {
             await addNewProjectToUserProfile(currentUser.uid, {id: newProject["id"]});
             this.props.fetchProjects(firebase).then((res)=>{// for the bug  that the new project is not live updated, projectDocIds is only set once during the component did mount
                 console.log(res, this.state)
+                this.toggleNewProjectModal();
             })
+
         })
     }
 
     render(){
         console.log(this.props, this.state)
         const { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen } = this.state
-        const { profile, projects } = this.props;
-        const profileProjs = profile["projects"].filter((proj)=>{
+        const { profile, profile2, projects, uid } = this.props;
+        this.profile = profile2?profile2[uid]?profile2[uid]:profile:profile;
+        const profileProjs = profile2?profile2[uid]?profile2[uid]["projects"].filter((proj)=>{
             if(proj["projectId"] === "Inbox" || proj["projectId"] === "Today") return proj
             return null
-        });
+        }):null:null;
+        if(!profileProjs) return null
         const dispProjects = [...profileProjs, ...projects]
         const projectToDisplay = dispProjects.find((proj)=>{
             return proj["id"] === selectedProj
         })
-        console.log(projects, dispProjects, projectToDisplay)
         return (
             <>
                 {/* MODALS/POPUPS  */}
@@ -141,7 +144,7 @@ class DashboardContainer extends Component {
                         toggleNewProjectModal={this.toggleNewProjectModal}
                     />
                     <Dashboard 
-                        profile={profile} 
+                        profile={this.profile} 
                         toggleNewTaskModal={this.toggleNewTaskModal} 
                         projects={dispProjects}
                         selectedProj={selectedProj}
@@ -156,10 +159,14 @@ class DashboardContainer extends Component {
 
 const mapStateToProps = (state, props) =>{ 
     console.log(state, props)
+    const uid = state.authReducer["uid"]
+    const profile = state.firebase.profile
+    const profile2 = state.firestore["data"]["userDetails"];
     return {
-        profile: state.firestore["data"],
-        uid: state.authReducer["uid"],
-        fetchProjects: async (firebase) => props.dispatch(fetchProjects(state.firebase.profile, firebase)), 
+        profile2,
+        profile,
+        uid,
+        fetchProjects: async (firebase) => props.dispatch(fetchProjects(profile2?profile2[uid]:profile, firebase)), 
         projects: state.projectsReducer["projects"].map((proj)=>{
             return proj.data()
         })

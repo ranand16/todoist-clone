@@ -1,25 +1,30 @@
 import React from 'react';
+import './leftPane.css'
+
 const LeftPane = (props) => {
     const selectProj = (e)=>{
-        console.log(e.currentTarget.getAttribute("name"), e.currentTarget.getAttribute("project"));
         props.switchProject(e.currentTarget.getAttribute("name"), e.currentTarget.getAttribute("project"))
     }
-    console.log(props)
+
+    const toggleAddNewProject = (e) => {
+        console.log(e.currentTarget.getAttribute("name"))
+        props.toggleNewProjectModal();
+    }
+
     if(props["projects"] && props["projects"].length>0) {   
-        console.log(props["projects"])
         return (
             <div className={"dashboard_leftpane"}>
                 {
                     props["projects"].map((project, i)=>{
-                        console.log(project)
                         const key = project["id"]
                         return ( <div key={key} name={key} project={project["projectId"]} onClick={selectProj} className={"projTitleLeftPane"} ><span name={key}>{project['projectId']}</span></div>)
                     })
                 }
+                {
+                    (<div name={"newproject"} onClick={toggleAddNewProject} className={"projTitleLeftPane"} ><span className={"addNew"}>Add new project</span></div>)
+                }
             </div>
         );
-    } else {
-        console.log("in else")
     }
     return (
         <div className={"dashboard_leftpane"}>
