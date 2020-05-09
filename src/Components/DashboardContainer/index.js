@@ -23,7 +23,9 @@ class DashboardContainer extends Component {
             newTaskModalIsOpen: false,
             newProjectModalIsOpen: false,
             profileProjects: [],
-            profileProjs: null
+            profileProjs: null,
+            selectedProjStructure: null,
+            selectedsectionIndex: null
         }
     }
 
@@ -61,8 +63,8 @@ class DashboardContainer extends Component {
      * if project is not present set selectedProjStructure as null
      * which means that cancel/cross was pressed
      */
-    toggleNewTaskModal = (project) =>{
-        this.setState(prevState => ({ newTaskModalIsOpen: !prevState.newTaskModalIsOpen, selectedProjStructure: project }));
+    toggleNewTaskModal = (project, sectionIndex) =>{
+        this.setState(prevState => ({ newTaskModalIsOpen: !prevState.newTaskModalIsOpen, selectedProjStructure: project, selectedsectionIndex: sectionIndex }));
     } 
 
     /**
@@ -77,17 +79,21 @@ class DashboardContainer extends Component {
      */
     addNewTask = async (task) => {
         const { addNewPersonalTask, addNewTaskToProj, firebase, profile } = this.props;
-        const { selectedProj, selectedProjStructure } = this.state;
+        let { selectedProj, selectedProjStructure, selectedsectionIndex } = this.state;
         const currentUser = firebase.auth().currentUser
         const selected = {"Today":1, "Inbox": 0};
+        task["date"] = Date.now();
         if(selectedProjStructure["projectId"]==="Inbox" || selectedProjStructure["projectId"]==="Today"){
             const newUser = Object.assign({}, profile);
-            newUser["projects"][selected[selectedProjStructure["projectId"]]]["sections"].push(task)
+            newUser["projects"][selected[selectedProjStructure["projectId"]]]["sections"][selectedsectionIndex]["tasks"].push(task)
             delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
             await addNewPersonalTask(currentUser.uid, newUser)
             this.toggleNewTaskModal(null);
         } else {
-            if(selectedProjStructure["id"]) await addNewTaskToProj(selectedProjStructure["id"], task)
+            console.log(selectedProjStructure, task)
+            selectedProjStructure["sections"][selectedsectionIndex]["tasks"].push(task)
+            console.log(selectedProjStructure)
+            if(selectedProjStructure["id"]) await addNewTaskToProj(selectedProjStructure["id"], selectedProjStructure["sections"])
             this.toggleNewTaskModal(null);
         }
     }
@@ -176,7 +182,7 @@ const mapStateToProps = (state, props) =>{
 const highOrderWrap = compose(
     withFirestore,
     withHandlers({ 
-        addNewTaskToProj: props => async (projectId, task) => props.firestore.collection('projects').doc(projectId).update({sections: props.firebase.firestore.FieldValue.arrayUnion(task) }),
+        addNewTaskToProj: props => async (projectId, updatedSection) => props.firestore.collection('projects').doc(projectId).update({sections: updatedSection }),
         addNewPersonalTask: props => async (userDocId, usersDetail) => props.firestore.collection('userDetails').doc(userDocId).set(usersDetail),
         addNewProjectToProjects: props => async (project) => props.firestore.collection('projects').doc(project["id"]).set(project),
         addNewProjectToUserProfile: props => async (userDocId, newProj) => props.firestore.collection('userDetails').doc(userDocId).update({projects: props.firebase.firestore.FieldValue.arrayUnion(newProj) })
