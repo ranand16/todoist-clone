@@ -78,7 +78,7 @@ class DashboardContainer extends Component {
      * @param {task} 
      */
     addNewTask = async (task) => {
-        const { addNewPersonalTask, addNewTaskToProj, firebase, profile } = this.props;
+        const { updateUserDetails, updateSection, firebase, profile } = this.props;
         let { selectedProj, selectedProjStructure, selectedsectionIndex } = this.state;
         const currentUser = firebase.auth().currentUser
         const selected = {"Today":1, "Inbox": 0};
@@ -87,15 +87,37 @@ class DashboardContainer extends Component {
             const newUser = Object.assign({}, profile);
             newUser["projects"][selected[selectedProjStructure["projectId"]]]["sections"][selectedsectionIndex]["tasks"].push(task)
             delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
-            await addNewPersonalTask(currentUser.uid, newUser)
+            await updateUserDetails(currentUser.uid, newUser)
             this.toggleNewTaskModal(null);
         } else {
             console.log(selectedProjStructure, task)
             selectedProjStructure["sections"][selectedsectionIndex]["tasks"].push(task)
             console.log(selectedProjStructure)
-            if(selectedProjStructure["id"]) await addNewTaskToProj(selectedProjStructure["id"], selectedProjStructure["sections"])
+            if(selectedProjStructure["id"]) await updateSection(selectedProjStructure["id"], selectedProjStructure["sections"])
             this.toggleNewTaskModal(null);
         }
+    }
+
+    addNewSectionToProject = async (name, project) => {
+        const { updateUserDetails, updateSection, firebase, profile } = this.props;
+        let { selectedProj } = this.state;
+        const currentUser = firebase.auth().currentUser
+        const selected = {"Today":1, "Inbox": 0};
+        const newSection = {
+            date: Date.now(),
+            name,
+            tasks: []
+        }
+        if(project["projectId"]==="Inbox"){ // Today cannot have sections
+            const newUser = Object.assign({}, profile);
+            newUser["projects"][selected[project["projectId"]]]["sections"].push(newSection)
+            delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
+            await updateUserDetails(currentUser.uid, newUser)
+        } else {
+            project["sections"].push(newSection)
+            if(project["id"]) await updateSection(project["id"], project["sections"])
+        }
+        return true        
     }
 
     addNewProject = async (project) => {
@@ -140,7 +162,7 @@ class DashboardContainer extends Component {
                     toggleNewTaskModal={this.toggleNewTaskModal} 
                     addNewTask={this.addNewTask} 
                 />
-
+                
                 {/* UI */}
                 <CustomNavbar firebase={this.props.firebase}/>
                 <div className={"contents-container"}>
@@ -155,6 +177,7 @@ class DashboardContainer extends Component {
                         projects={dispProjects}
                         selectedProj={selectedProj}
                         projectToDisplay={projectToDisplay}
+                        addNewSectionToProject = {this.addNewSectionToProject}
                     />
                     <RightPane />
                 </div>
@@ -182,8 +205,8 @@ const mapStateToProps = (state, props) =>{
 const highOrderWrap = compose(
     withFirestore,
     withHandlers({ 
-        addNewTaskToProj: props => async (projectId, updatedSection) => props.firestore.collection('projects').doc(projectId).update({sections: updatedSection }),
-        addNewPersonalTask: props => async (userDocId, usersDetail) => props.firestore.collection('userDetails').doc(userDocId).set(usersDetail),
+        updateSection: props => async (projectId, updatedSection) => props.firestore.collection('projects').doc(projectId).update({sections: updatedSection }),
+        updateUserDetails: props => async (userDocId, usersDetail) => props.firestore.collection('userDetails').doc(userDocId).set(usersDetail),
         addNewProjectToProjects: props => async (project) => props.firestore.collection('projects').doc(project["id"]).set(project),
         addNewProjectToUserProfile: props => async (userDocId, newProj) => props.firestore.collection('userDetails').doc(userDocId).update({projects: props.firebase.firestore.FieldValue.arrayUnion(newProj) })
     }), 

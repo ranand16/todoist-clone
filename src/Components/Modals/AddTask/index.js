@@ -22,7 +22,7 @@ const AddTaskModal = (props) => {
           <ModalHeader toggle={toggle}>Add task</ModalHeader>
           <ModalBody>
             <Input placeholder={"e.g. Get a hair cut"} onChange={onChangeTask} value={task} style={{margin:"0rem 0rem 0.5rem 0rem"}} />
-            <Button color="primary" onClick={addTask} disabled={!task}>Add task</Button>
+            <Button className="commonBtn" onClick={addTask} disabled={!task}>Add task</Button>
           </ModalBody>
         </Modal>
       </div>

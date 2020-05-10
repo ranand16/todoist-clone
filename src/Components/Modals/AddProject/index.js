@@ -22,7 +22,7 @@ const AddProjectModal = (props) => {
           <ModalHeader toggle={toggle}>Add project</ModalHeader>
           <ModalBody>
             <Input placeholder={"e.g. Thunder"} onChange={onChangeProject} value={project} style={{margin:"0rem 0rem 0.5rem 0rem"}} />
-            <Button color="primary" onClick={addProject} disabled={!project}>Add project</Button>
+            <Button className="commonBtn" onClick={addProject} disabled={!project}>Add project</Button>
           </ModalBody>
         </Modal>
       </div>

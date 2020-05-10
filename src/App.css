@@ -11,16 +11,12 @@ input{
             box-shadow: none !important;
     text-decoration: none !important;
 }
-button::-moz-selection {
-    /* border: none; */
-    outline: none;
-}
 button::-moz-selection, a::-moz-selection {
     outline: none;
     text-decoration: none;
 }
 button:active, button::selection, button:visited, button:focus, button:focus-within, button:hover,
-a:active, a::selection, a:visited, a:focus, a:focus-within, a:hover {
+a:active, a::selection, a:visited, a:focus, a:focus-within{
     outline: none;
     text-decoration: none;
 }
@@ -43,6 +39,26 @@ input[type = "text"], input[type = "password"] {
 }
 input, select {
     outline: none;
+}
+a{
+    background-color: transparent !important;
+}
+a:hover {
+    text-decoration: underline !important;
+    
+}
+.alert-link {
+    font-weight: 700 !important;
+    color: #040505 !important;
+    cursor: pointer;
+}
+.commonBtn{
+    background: rgb(125,85,185) !important;
+    background: linear-gradient(90deg, rgba(125,85,185,1) 0%, rgba(127,86,189,1) 50%, rgba(125,85,185,1) 100%) !important;
+}
+.commonBtn:hover,.commonBtn:focus,.commonBtn:active{
+}
+.commonBtn:disabled{
 }
 #signInWrapper{
     display: -webkit-box;
@@ -68,9 +84,11 @@ input, select {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
-    background: #8A2BE2;
+    background: rgb(99,65,150);
+    background: linear-gradient(90deg, rgba(99,65,150,1) 0%, rgba(113,76,168,1) 50%, rgba(99,65,150,1) 100%);
     -webkit-box-shadow: 2px 4px 10px #aaa;
             box-shadow: 2px 4px 10px #aaa;
+    padding: 5px 0px;
 
 }
 .navBar a{
@@ -78,11 +96,13 @@ input, select {
     -webkit-box-flex: 1;
         -ms-flex: 1;
             flex: 1;
-    color: #eee;
+    color: #cbbde1;
+    /* color: black; */
     padding: 0.5rem 0.6rem;
 }
 .navBar > #dashboardNav{
     font-weight: bold;
+    color: #eee;
 }
 .navBar > #searchNav {
     -webkit-box-flex: 15;

@@ -1,0 +1,34 @@
+.addSectionLayout{
+    margin: 0 auto;
+    opacity: 0;
+    cursor: pointer;
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: center;
+    align-items: center;
+    transition: opacity .3s cubic-bezier(.4,0,.2,1);
+}
+.addSectionLayout:hover{
+    opacity: 1;
+}
+.addSectionLayout::before, .addSectionLayout::after{
+    content: "";
+    display: block;
+    height: 2px;
+    flex: 1 1 auto;
+    opacity: .5;
+    background-color: #422f60;
+}
+.addSectionLayout::before{
+    margin-right: 10px;
+}
+.addSectionLayout::after{
+    margin-left: 10px;
+}
+
+.addSectionForm{
+    padding: 1rem 0rem;
+}
+.addSectionForm input{
+    margin: 1rem 0rem;
+}
