@@ -17,7 +17,7 @@
     height: 2px;
     flex: 1 1 auto;
     opacity: .5;
-    background-color: #422f60;
+    background-color: #8300ff;
 }
 .addSectionLayout::before{
     margin-right: 10px;
@@ -31,4 +31,39 @@
 }
 .addSectionForm input{
     margin: 1rem 0rem;
+}
+.section{
+    padding: 1.5rem 0rem;
+}
+.section > h4{
+    padding: 0rem 0rem 0.5rem 0rem;
+}
+.section button{
+    padding: 0rem;
+}
+.section button:hover, .section button svg:hover{
+    padding: 0rem;
+    fill: #66439A;
+}
+.addTask{
+    color: grey;
+}
+.taskContainer{
+    display: flex;
+
+    padding: 0.2rem 0rem 0.2rem 0.4rem;
+    cursor: pointer;
+    border-radius: 0.2rem;
+}
+.taskContainer span:first-child{
+    flex: 8
+}
+.taskContainer span:last-child{
+    flex: 2;
+}
+.taskContainer:hover {
+    background-color: #FAFAFA;
+}
+.taskActions{
+
 }

@@ -39,18 +39,45 @@ class Dashboard extends Component {
                     {<span><h2>{projectToDisplay?projectToDisplay["projectId"]:""}</h2></span>}<br/>
                     {projectToDisplay?projectToDisplay.sections.length>0?projectToDisplay.sections.map((section, i)=>{
                         return (
-                            <div key={section["name"]?section["name"]:i}>
+                            <div className="section" key={section["name"]?section["name"]:i}>
                                 <h4>{section["name"]}</h4>
                                     {section["tasks"]?section["tasks"].map((task, i)=>{
-                                        return <h5 key={task["date"]+i}>{task["task"]}</h5>
+                                        return <div className={"taskContainer"} key={task["date"]+i}>
+                                            <span>{task["task"]}</span>
+                                            <span className="taskActions">
+                                                <span>
+                                                    <svg class="bi bi-plus-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" d="M8 3.5a.5.5 0 01.5.5v4a.5.5 0 01-.5.5H4a.5.5 0 010-1h3.5V4a.5.5 0 01.5-.5z" clip-rule="evenodd"/>
+                                                        <path fill-rule="evenodd" d="M7.5 8a.5.5 0 01.5-.5h4a.5.5 0 010 1H8.5V12a.5.5 0 01-1 0V8z" clip-rule="evenodd"/>
+                                                        <path fill-rule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </span>
+                                                <span>
+                                                    <svg class="bi bi-chat-square-dots" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" d="M14 1H2a1 1 0 00-1 1v8a1 1 0 001 1h2.5a2 2 0 011.6.8L8 14.333 9.9 11.8a2 2 0 011.6-.8H14a1 1 0 001-1V2a1 1 0 00-1-1zM2 0a2 2 0 00-2 2v8a2 2 0 002 2h2.5a1 1 0 01.8.4l1.9 2.533a1 1 0 001.6 0l1.9-2.533a1 1 0 01.8-.4H14a2 2 0 002-2V2a2 2 0 00-2-2H2z" clip-rule="evenodd"/>
+                                                        <path d="M5 6a1 1 0 11-2 0 1 1 0 012 0zm4 0a1 1 0 11-2 0 1 1 0 012 0zm4 0a1 1 0 11-2 0 1 1 0 012 0z"/>
+                                                    </svg>
+                                                </span>
+                                                <span>
+                                                    <svg class="bi bi-dash-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clip-rule="evenodd"/>
+                                                        <path fill-rule="evenodd" d="M3.5 8a.5.5 0 01.5-.5h8a.5.5 0 010 1H4a.5.5 0 01-.5-.5z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </span>
+                                            </span>
+                                        </div>
                                     }):null}
                                 <div></div>
-                                <span><button onClick={()=>{this.props.toggleNewTaskModal(projectToDisplay, i)}}>Add task to section</button></span>
+                                <button className="addTask" onClick={()=>{this.props.toggleNewTaskModal(projectToDisplay, i)}}>
+                                    <svg className="bi bi-plus-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16 8A8 8 0 110 8a8 8 0 0116 0zM8.5 4a.5.5 0 00-1 0v3.5H4a.5.5 0 000 1h3.5V12a.5.5 0 001 0V8.5H12a.5.5 0 000-1H8.5V4z" clip-rule="evenodd"/>
+                                    </svg>Add task
+                                </button>
                             </div>
                         )
                     }):null:null}
                     {projectToDisplay["projectId"]!=="Today"?<div className="addSectionLayout">
-                        <button onClick={this.toggleAddSection}>Add Section</button>
+                        <button onClick={this.toggleAddSection}><span></span>Add Section</button>
                     </div>:""}
                     {
                         addSectionForm && 
