@@ -33,37 +33,41 @@
     margin: 1rem 0rem;
 }
 .section{
-    padding: 1.5rem 0rem;
+    padding: 0rem 0rem 1.5rem 0rem;
 }
 .section > h4{
     padding: 0rem 0rem 0.5rem 0rem;
 }
-.section button{
+/* .section button{
     padding: 0rem;
-}
+} */
 .section button:hover, .section button svg:hover{
-    padding: 0rem;
     fill: #66439A;
 }
 .addTask{
+    padding-top: 1rem;
     color: grey;
 }
 .taskContainer{
     display: flex;
 
-    padding: 0.2rem 0rem 0.2rem 0.4rem;
+    padding: 0.4rem 0rem 0.4rem 0.4rem;
     cursor: pointer;
     border-radius: 0.2rem;
 }
-.taskContainer span:first-child{
+.taskContainer > span:first-child{
     flex: 8
 }
-.taskContainer span:last-child{
-    flex: 2;
+.taskContainer > span:last-child{
+    display: flex;
+    visibility: hidden;
+    flex: 1;
 }
-.taskContainer:hover {
-    background-color: #FAFAFA;
+.taskContainer:hover > span:last-child {
+    visibility: visible;
 }
 .taskActions{
-
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
 }
