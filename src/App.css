@@ -107,9 +107,9 @@ hr{
     color: #eee;
 }
 .navBar > #searchNav {
-    -webkit-box-flex: 15;
-        -ms-flex: 15;
-            flex: 15
+    -webkit-box-flex: 12;
+        -ms-flex: 12;
+            flex: 12
 }
 .navBar input {
     width: 100%;
@@ -117,9 +117,9 @@ hr{
     border-radius: 0.25rem;
 }
 .navBar > #logoutNav{
-    -webkit-box-flex: 3;
-        -ms-flex: 3;
-            flex: 3;
+    -webkit-box-flex: 5;
+        -ms-flex: 5;
+            flex: 5;
     text-align: right;
 }
 

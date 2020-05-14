@@ -54,6 +54,8 @@
     padding: 0.4rem 0rem 0.4rem 0.4rem;
     cursor: pointer;
     border-radius: 0.2rem;
+    color: rgb(50, 50 ,50);
+    font-weight: 300;
 }
 .taskContainer > span:first-child{
     flex: 8
