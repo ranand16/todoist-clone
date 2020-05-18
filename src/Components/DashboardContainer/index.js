@@ -10,9 +10,10 @@ import fetchProjects from '../../Actions/fetchProjects'
 import createNewProject from "../../Utility/createProject"
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { firestoreConnect, withFirestore } from 'react-redux-firebase'
+import { withFirestore } from 'react-redux-firebase'
 import { withHandlers } from 'recompose'
 import './dashboard.css'
+import CustomSpinner from "../Spinner"
 
 class DashboardContainer extends Component {
     constructor(props){
@@ -25,8 +26,15 @@ class DashboardContainer extends Component {
             profileProjects: [],
             profileProjs: null,
             selectedProjStructure: null,
-            selectedsectionIndex: null
+            selectedsectionIndex: null,
+
+            //dashboard
+            editTaskToggle: false, // editing task is on-going 
+            editSectionToggle: false, // editing task's section
+            // spinner
+            showSpinner: false
         }
+        this.dispProjects = null;
     }
 
     componentDidMount(){
@@ -54,7 +62,10 @@ class DashboardContainer extends Component {
         const { fetchProject } = this.props;
         const { selectedProj } = this.state;
         if(id && id !== selectedProj){
-            this.setState({ selectedProj: id })
+            this.setState({ 
+                selectedProj: id,
+                editTaskToggle: false, editSectionToggle: false // resetting if something is being edited while switching project
+            })
         }
     }
 
@@ -135,9 +146,31 @@ class DashboardContainer extends Component {
         })
     }
 
+    toggleEdit = (editTaskToggle, editSectionToggle) => {
+        this.setState({ editTaskToggle, editSectionToggle })
+    }
+
+    /**
+     * after pressing confirm/enter after typing a new task name.
+     */
+    confirmEditTask = async (newTaskValue) => {
+        this.setState({ showSpinner: true })
+        const { selectedProj, editTaskToggle, editSectionToggle } = this.state
+        const { updateSection } = this.props;        
+        // updateSection - this is a props function which will be used to set the full sections array containig all the tasks
+        let { sections } = this.dispProjects.find(proj=>proj["id"] === selectedProj)
+        sections[editSectionToggle]["tasks"][editTaskToggle]["task"] = newTaskValue
+        return updateSection(selectedProj, sections).then((res)=>{
+            this.setState({ editTaskToggle: false, editSectionToggle: false, showSpinner: false });
+            return res
+        }).catch((err)=>{
+            console.log(err);
+        })
+    }
+
     render(){
         console.log(this.props, this.state)
-        const { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen } = this.state
+        const { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editTaskToggle, editSectionToggle, showSpinner } = this.state
         const { profile, profile2, projects, uid } = this.props;
         this.profile = profile2?profile2[uid]?profile2[uid]:profile:profile;
         const profileProjs = profile2?profile2[uid]?profile2[uid]["projects"].filter((proj)=>{
@@ -146,11 +179,14 @@ class DashboardContainer extends Component {
         }):null:null;
         if(!profileProjs) return null
         const dispProjects = [...profileProjs, ...projects]
+        this.dispProjects = dispProjects;
         const projectToDisplay = dispProjects.find((proj)=>{
             return proj["id"] === selectedProj
         })
         return (
             <>
+                {/* SPINNER */}
+                { showSpinner && <CustomSpinner />}
                 {/* MODALS/POPUPS  */}
                 <AddProjectModal 
                     isOpen={newProjectModalIsOpen} 
@@ -178,6 +214,10 @@ class DashboardContainer extends Component {
                         selectedProj={selectedProj}
                         projectToDisplay={projectToDisplay}
                         addNewSectionToProject = {this.addNewSectionToProject}
+                        editTaskToggle = {editTaskToggle}// editing task is on-going 
+                        editSectionToggle = {editSectionToggle}// editing task's section
+                        updateToggle = {this.toggleEdit}
+                        confirmEditTask = {this.confirmEditTask}
                     />
                     <RightPane />
                 </div>

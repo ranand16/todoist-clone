@@ -132,6 +132,22 @@ hr{
     display: -ms-flexbox;    
     display: flex;
 }
+.spinnerWrapper{
+    display: none;
+    width: 100%;
+    height: 100%;
+    /* background-color: rgba(139, 129, 155, 0.644); */
+    position: absolute;
+    text-align: center;
+
+}
+.spinnerCommon{
+    color: #66439A;
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+}
 
 /* Desktops and laptops ----------- */
 @media only screen  

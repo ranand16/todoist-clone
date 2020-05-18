@@ -57,6 +57,9 @@
     color: rgb(50, 50 ,50);
     font-weight: 300;
 }
+.taskContainer>div{
+    width: 100%;
+}
 .taskContainer > span:first-child{
     flex: 8
 }
@@ -72,4 +75,15 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
+}
+.taskEditSubtext{
+    color: rgb(176, 179, 184);
+    cursor: pointer;
+    font-size: 0.7rem;
+}
+.taskEditSubtext>a{
+    color: #007bff !important;
+}
+.taskName{
+    cursor: text;
 }
