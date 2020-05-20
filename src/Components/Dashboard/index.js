@@ -126,6 +126,7 @@ class Dashboard extends Component {
                     console.log(editedTaskValue)
                     // need to call the dashboard container function to update this task value to the db
                     this.props.confirmEditTask(editedTaskValue).then((res)=>{
+                        console.log(res)
                         this.setState({ editedTaskValue: "" });
                     })
                     break;

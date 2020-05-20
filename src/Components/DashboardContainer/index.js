@@ -38,9 +38,9 @@ class DashboardContainer extends Component {
     }
 
     componentDidMount(){
-        const { profile, firebase, firestore, uid, profile2 } = this.props;
+        let { profile, firebase, firestore, uid, profile2 } = this.props;
         firestore.setListener({ collection: 'userDetails', doc: uid })
-        const profileProjs = profile2?profile2[uid]?profile2[uid]["projects"]:profile["projects"]:profile["projects"];
+        let profileProjs = profile2?profile2[uid]?profile2[uid]["projects"]:profile["projects"]:profile["projects"];
         profileProjs.map((project)=>{
             if(project["projectId"] === "Today") { 
                 this.setState({selectedProj: project["id"]});
@@ -59,8 +59,8 @@ class DashboardContainer extends Component {
      */
     switchProject = async (id, projectName) => {
         console.log(id, projectName, this.props)
-        const { fetchProject } = this.props;
-        const { selectedProj } = this.state;
+        let { fetchProject } = this.props;
+        let { selectedProj } = this.state;
         if(id && id !== selectedProj){
             this.setState({ 
                 selectedProj: id,
@@ -89,13 +89,13 @@ class DashboardContainer extends Component {
      * @param {task} 
      */
     addNewTask = async (task) => {
-        const { updateUserDetails, updateSection, firebase, profile } = this.props;
+        let { updateUserDetails, updateSection, firebase, profile } = this.props;
         let { selectedProj, selectedProjStructure, selectedsectionIndex } = this.state;
-        const currentUser = firebase.auth().currentUser
-        const selected = {"Today":1, "Inbox": 0};
+        let currentUser = firebase.auth().currentUser
+        let selected = {"Today":1, "Inbox": 0};
         task["date"] = Date.now();
         if(selectedProjStructure["projectId"]==="Inbox" || selectedProjStructure["projectId"]==="Today"){
-            const newUser = Object.assign({}, profile);
+            let newUser = Object.assign({}, profile);
             newUser["projects"][selected[selectedProjStructure["projectId"]]]["sections"][selectedsectionIndex]["tasks"].push(task)
             delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
             await updateUserDetails(currentUser.uid, newUser)
@@ -110,17 +110,17 @@ class DashboardContainer extends Component {
     }
 
     addNewSectionToProject = async (name, project) => {
-        const { updateUserDetails, updateSection, firebase, profile } = this.props;
+        let { updateUserDetails, updateSection, firebase, profile } = this.props;
         let { selectedProj } = this.state;
-        const currentUser = firebase.auth().currentUser
-        const selected = {"Today":1, "Inbox": 0};
-        const newSection = {
+        let currentUser = firebase.auth().currentUser
+        let selected = {"Today":1, "Inbox": 0};
+        let newSection = {
             date: Date.now(),
             name,
             tasks: []
         }
         if(project["projectId"]==="Inbox"){ // Today cannot have sections
-            const newUser = Object.assign({}, profile);
+            let newUser = Object.assign({}, profile);
             newUser["projects"][selected[project["projectId"]]]["sections"].push(newSection)
             delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
             await updateUserDetails(currentUser.uid, newUser)
@@ -132,10 +132,10 @@ class DashboardContainer extends Component {
     }
 
     addNewProject = async (project) => {
-        const { addNewProjectToProjects, addNewProjectToUserProfile, firestore, firebase, profile } = this.props;
-        const currentUser = firebase.auth().currentUser
+        let { addNewProjectToProjects, addNewProjectToUserProfile, firestore, firebase, profile } = this.props;
+        let currentUser = firebase.auth().currentUser
         if(!project) return; // guarding
-        const newProject = createNewProject(project, firestore);
+        let newProject = createNewProject(project, firestore);
         addNewProjectToProjects(newProject).then(async(res)=>{
             await addNewProjectToUserProfile(currentUser.uid, {id: newProject["id"]});
             this.props.fetchProjects(firebase).then((res)=>{// for the bug  that the new project is not live updated, projectDocIds is only set once during the component did mount
@@ -149,38 +149,64 @@ class DashboardContainer extends Component {
     toggleEdit = (editTaskToggle, editSectionToggle) => {
         this.setState({ editTaskToggle, editSectionToggle })
     }
-
     /**
      * after pressing confirm/enter after typing a new task name.
      */
     confirmEditTask = async (newTaskValue) => {
         this.setState({ showSpinner: true })
-        const { selectedProj, editTaskToggle, editSectionToggle } = this.state
-        const { updateSection } = this.props;        
+        let { selectedProj, editTaskToggle, editSectionToggle } = this.state
+        let { updateSection, updateUserDetails, profile, firebase } = this.props;
+        let currentUser = firebase.auth().currentUser
         // updateSection - this is a props function which will be used to set the full sections array containig all the tasks
-        let { sections } = this.dispProjects.find(proj=>proj["id"] === selectedProj)
-        sections[editSectionToggle]["tasks"][editTaskToggle]["task"] = newTaskValue
-        return updateSection(selectedProj, sections).then((res)=>{
-            this.setState({ editTaskToggle: false, editSectionToggle: false, showSpinner: false });
-            return res
-        }).catch((err)=>{
-            console.log(err);
-        })
+        let { projectId, sections } = this.dispProjects.find(proj=>proj["id"] === selectedProj)
+        let editedSections = JSON.parse(JSON.stringify(sections))
+        if(projectId==="Today" || projectId==="Inbox"){
+            let editedSection = JSON.parse(JSON.stringify(editedSections[editSectionToggle])) ;
+            let editedTask = JSON.parse(JSON.stringify(editedSection["tasks"][editTaskToggle]));
+            editedTask["task"] = newTaskValue
+            editedSection["tasks"][editTaskToggle] = editedTask
+            console.log(editedSections, editedSection, editedTask)
+            editedSections[editSectionToggle] = editedSection
+            console.log(editedSections)
+            let newUser = Object.assign({}, profile);
+            let projIndex = newUser["projects"].findIndex(proj=> proj["projectId"]===projectId)
+            newUser["projects"][projIndex]["sections"] = editedSections
+            delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
+            console.log(newUser);
+            return updateUserDetails(currentUser.uid, newUser).then((res)=>{
+                console.log(res)
+                this.setState({ editTaskToggle: false, editSectionToggle: false, showSpinner: false });
+                return res
+            }).catch((err)=>{
+                console.log(err)
+            })
+        } else {
+            // console.log(sections, editSectionToggle, sections[editSectionToggle]["tasks"], editTaskToggle, sections[editSectionToggle]["tasks"][editTaskToggle])
+            sections[editSectionToggle]["tasks"][editTaskToggle]["task"] = newTaskValue
+            return updateSection(selectedProj, sections).then((res)=>{
+                this.setState({ editTaskToggle: false, editSectionToggle: false, showSpinner: false });
+                return res
+            }).catch((err)=>{
+                console.log(err);
+            })
+        }
     }
 
     render(){
         console.log(this.props, this.state)
-        const { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editTaskToggle, editSectionToggle, showSpinner } = this.state
-        const { profile, profile2, projects, uid } = this.props;
+        let { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editTaskToggle, editSectionToggle, showSpinner } = this.state
+        let { profile, profile2, projects, uid } = this.props;
         this.profile = profile2?profile2[uid]?profile2[uid]:profile:profile;
-        const profileProjs = profile2?profile2[uid]?profile2[uid]["projects"].filter((proj)=>{
+        let profileProjs = profile2?profile2[uid]?profile2[uid]["projects"].filter((proj)=>{
             if(proj["projectId"] === "Inbox" || proj["projectId"] === "Today") return proj
             return null
         }):null:null;
         if(!profileProjs) return null
-        const dispProjects = [...profileProjs, ...projects]
+        // let dispProjects = [...profileProjs, ...projects]
+        let dispProjects = profileProjs.concat(projects.filter((item) => profileProjs.indexOf(item) < 0))
+
         this.dispProjects = dispProjects;
-        const projectToDisplay = dispProjects.find((proj)=>{
+        let projectToDisplay = dispProjects.find((proj)=>{
             return proj["id"] === selectedProj
         })
         return (
@@ -228,9 +254,9 @@ class DashboardContainer extends Component {
 
 const mapStateToProps = (state, props) =>{ 
     console.log(state, props)
-    const uid = state.authReducer["uid"]
-    const profile = state.firebase.profile
-    const profile2 = state.firestore["data"]["userDetails"];
+    let uid = state.authReducer["uid"]
+    let profile = state.firebase.profile
+    let profile2 = state.firestore["data"]["userDetails"];
     return {
         profile2,
         profile,
