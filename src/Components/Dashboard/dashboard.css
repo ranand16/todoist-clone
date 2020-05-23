@@ -76,14 +76,19 @@
     align-items: center;
     justify-content: space-evenly;
 }
-.taskEditSubtext{
+.editSubtext{
     color: rgb(176, 179, 184);
     cursor: pointer;
     font-size: 0.7rem;
 }
-.taskEditSubtext>a{
+.editSubtext>a{
     color: #007bff !important;
 }
 .taskName{
     cursor: text;
+}
+.sectionHeader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

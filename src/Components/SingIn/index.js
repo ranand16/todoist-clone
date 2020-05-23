@@ -24,6 +24,12 @@ class SignIn extends Component{
         this.props.fetchUserDetails(this.signInDetails, this.props.firebase).then((res)=>{
             console.log(res)
             this.props.history.push({ pathname: '/dashboard' })
+        }).catch((err)=>{
+            console.log(err)
+            // {
+            //     "code": "auth/network-request-failed",
+            //     "message": "A network error (such as timeout, interrupted connection or unreachable host) has occurred."
+            // }
         });
     }
 

@@ -5,6 +5,7 @@ body, html, #root{
 button{
     outline: none;
     border: none;
+    background-color: white;
 }
 input{
     -webkit-box-shadow: none !important;

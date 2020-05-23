@@ -8,7 +8,7 @@ const fetchUserDetails = (newUser, fb, createNewUser) => {
     const _firebaseRef = fb;
     const _firestoreRef = _firebaseRef.firestore();
     if(newUser["isNewUser"]){ // its a signup function
-        console.log("This is sign up.")
+        // console.log("This is sign up.")
         return async (dispatch) => {
             let signUpResponse =  await _firebaseRef.auth().createUserWithEmailAndPassword(newUser["signUpEmail"], newUser["signUpPassword"])
             const newUserObj = createNewUser(signUpResponse["user"]["uid"], signUpResponse["user"]["email"], _firestoreRef)
@@ -16,7 +16,7 @@ const fetchUserDetails = (newUser, fb, createNewUser) => {
             dispatch({ type: "FETCH_USER_DETAILS", newUser: {data: newUserObj, uid: signUpResponse["user"]["uid"]} })
         }
     } else { // its a signin function
-        console.log("This is sign in.")
+        // console.log("This is sign in.")
         return async (dispatch) => {
             let signInResponse =  await _firebaseRef.auth().signInWithEmailAndPassword(newUser["signInEmail"], newUser["signInPassword"])
             const userDetailsRes = await _firestoreRef.collection("userDetails").doc(signInResponse["user"]["uid"]).get()

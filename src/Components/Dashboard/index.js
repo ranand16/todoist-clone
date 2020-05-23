@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Input, Button } from 'reactstrap';
+import { Input, Button, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import './dashboard.css'
 
 class Dashboard extends Component {
@@ -10,6 +10,8 @@ class Dashboard extends Component {
             addSectionForm: false, // new section toggle
             newSectionName: "", // new section name when adding a new section to this project
             editedTaskValue: "", // on-going editing task task updated task value,
+            editedSectionValue: "", // on-going editing task task updated task value,
+            sectionHamToggle: false
         };
     }
 
@@ -22,12 +24,19 @@ class Dashboard extends Component {
         if(e && e.keyCode){
             switch(e.keyCode){
                 case 27: // this is escape
-                    this.editToogle(false, false, false, "task");
+                    this.editToogle(false, false, false, false);
                     break;
                 default: 
                     break;
             }
         }
+    }
+
+    toggleSectionHamToggle = (sectionIndex) => {
+        this.setState(prevState=>  { 
+            if(prevState.sectionHamToggle===sectionIndex) return { sectionHamToggle: false }
+            else return { sectionHamToggle: sectionIndex }
+        })
     }
     
     toggleAddSection = () => {
@@ -50,20 +59,13 @@ class Dashboard extends Component {
     /**
      * This function toggles edit input field for task or section edit.
      */
-    editToogle = (sectionIndex, task, taskIndex, type, e) => {
+    editToogle = (section, sectionIndex, task, taskIndex, e) => {
         console.log(task, e, this.props)
         const { updateToggle } = this.props;
         const taskName = task?task["task"]:"";
-        switch(type){
-            case "task":
-                updateToggle(taskIndex , sectionIndex)
-                this.setState({ editedTaskValue: taskName })
-                break;
-            case "section":
-                break;
-            default: 
-                break;
-        }
+        const sectionName = section?section["name"]:"";
+        updateToggle(taskIndex, sectionIndex)
+        this.setState({ editedTaskValue: taskName, editedSectionValue: sectionName })
     }
 
     /**
@@ -77,16 +79,44 @@ class Dashboard extends Component {
     /**
      * This function deals with esc and enter button press from keyboard while editing task or section name
      */
-    editedTaskKeyValue = (e) => {
+    editedTaskKeyValue = (task, e) => {
         console.log(e, e.keyCode)
         // 27 for esc 13 for enter
         if(e && e.keyCode){
             switch(e.keyCode){
                 case 27: // this is escape
-                    this.editToogle(false, false, false, "task");
+                    this.editToogle(false, false, false, false);
                     break;
                 case 13: // this is confirm
-                    this.confirmEditTask(e);
+                    this.confirmEdit(task, null, e);
+                    break;
+                default: 
+                    break;
+            }
+        }
+    }
+
+    /**
+     * This function is onchange handler for task/section name edit
+     */
+    editedSectionValue = (e) => {
+        console.log(e, e.key)
+        this.setState({ editedSectionValue: e.target.value?e.target.value:"" })
+    }
+
+    /**
+     * This function deals with esc and enter button press from keyboard while editing task or section name
+     */
+    editedSectionKeyValue = (section, e) => {
+        console.log(e, e.keyCode)
+        // 27 for esc 13 for enter
+        if(e && e.keyCode){
+            switch(e.keyCode){
+                case 27: // this is escape
+                    this.editToogle(false, false, false, false);
+                    break;
+                case 13: // this is confirm
+                    this.confirmEdit(null, section, e);
                     break;
                 default: 
                     break;
@@ -104,7 +134,7 @@ class Dashboard extends Component {
             const name = e.currentTarget.getAttribute("name")
             switch(name){
                 case "taskCancelEdit":
-                    this.editToogle(false, false, false, "task");
+                    this.editToogle(false, false, false, false);
                     break;
                 default: 
                     break;
@@ -115,19 +145,33 @@ class Dashboard extends Component {
     /**
      * This Single function can be used to handle confirm operation for edit section name or task
      */
-    confirmEditTask = (e) => {
-        console.log(e)
-        console.log(e.currentTarget.getAttribute("name"))
-        const { editedTaskValue } = this.state
+    confirmEdit = (task, section, e) => {
+        console.log(task, e)
+        const { confirmEditTask, confirmEditSection } = this.props;
+        console.log(confirmEditSection)
+        const { editedTaskValue, editedSectionValue } = this.state
         if(e && e.currentTarget.getAttribute("name")){
             const name = e.currentTarget.getAttribute("name")
+            console.log(name)
             switch(name){
                 case "taskConfirmEdit":
                     console.log(editedTaskValue)
+                    let newTask = Object.assign({}, task)
+                    newTask["task"] = editedTaskValue;
                     // need to call the dashboard container function to update this task value to the db
-                    this.props.confirmEditTask(editedTaskValue).then((res)=>{
+                    confirmEditTask(newTask).then((res)=>{
                         console.log(res)
                         this.setState({ editedTaskValue: "" });
+                    })
+                    break;
+                case "sectionNameEdit":
+                    console.log(editedSectionValue)
+                    let newSection= Object.assign({}, section)
+                    newSection["name"] = editedSectionValue;
+                    // need to call the dashboard container function to update this task value to the db
+                    confirmEditSection(newSection).then((res)=>{
+                        console.log(res)
+                        this.setState({ editedSectionValue: "" });
                     })
                     break;
                 default: 
@@ -142,8 +186,8 @@ class Dashboard extends Component {
 
     render() {
         const { projectToDisplay, editTaskToggle, editSectionToggle } = this.props
-        const { addSectionForm, editedTaskValue, newSectionName } = this.state
-        console.log(projectToDisplay);
+        const { addSectionForm, editedTaskValue, editedSectionValue, newSectionName, sectionHamToggle } = this.state
+        console.log(editSectionToggle, editTaskToggle);
         return(
             <div className={"contents"}>
                 <div>
@@ -151,19 +195,42 @@ class Dashboard extends Component {
                     {projectToDisplay?projectToDisplay.sections.length>0?projectToDisplay.sections.map((section, i)=>{
                         return (
                             <div className="section" key={section["name"]?section["name"]:i}>
-                                <h4>{section["name"]}</h4>
+                                <h4 className={"sectionHeader"}>
+                                    {(editSectionToggle===i && (editTaskToggle===false || editTaskToggle===null))?
+                                        <div>
+                                            <Input name="sectionNameEdit" value={editedSectionValue} onChange={this.editedSectionValue} onKeyDown={this.editedSectionKeyValue.bind(this, section)} autoFocus />
+                                            <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="sectionNameEdit" href={this.block}>cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, null, section)} name="sectionNameEdit" href={this.block}>confirm</a>.</span>
+                                        </div>:
+                                        <span onClick={this.editToogle.bind(this, section, i, null, null)}>{section["name"]}</span>
+                                    }
+                                    <ButtonDropdown isOpen={sectionHamToggle===i} toggle={this.toggleSectionHamToggle.bind(this, i)}>
+                                        <DropdownToggle style={{ color: "grey" }} color="link">
+                                            <svg class="bi bi-three-dots-vertical" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0-5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0-5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </DropdownToggle>
+                                        <DropdownMenu>
+                                            {/* <DropdownItem header>Header</DropdownItem> */}
+                                            {/* <DropdownItem divider /> */}
+                                            {/* <DropdownItem disabled>Action</DropdownItem> */}
+                                            <DropdownItem>Edit</DropdownItem>
+                                            <DropdownItem>Remove</DropdownItem>
+                                            <DropdownItem>Archive</DropdownItem>
+                                        </DropdownMenu>
+                                    </ButtonDropdown>    
+                                </h4>
                                 <hr/>
                                 {section["tasks"]?section["tasks"].map((task, j)=>{
                                     return <div key={task["date"]+j}> 
                                         <div className={"taskContainer"}>
                                             {(editTaskToggle===j && editSectionToggle===i)?
                                                 <div>
-                                                    <Input  name="taskConfirmEdit" value={editedTaskValue} onChange={this.editedTaskValue} onKeyDown={this.editedTaskKeyValue} autoFocus />
-                                                    <span className={"taskEditSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="taskCancelEdit" href={this.block}>cancel</a> and Enter to <a onClick={this.confirmEditTask} name="taskConfirmEdit" href={this.block}>confirm</a>.</span>
-                                                </div> : <span onClick={this.editToogle.bind(this, i, task, j, "task")} className={"taskName"}>{task["task"]}</span>
+                                                    <Input  name="taskConfirmEdit" value={editedTaskValue} onChange={this.editedTaskValue} onKeyDown={this.editedTaskKeyValue.bind(this, task)} autoFocus />
+                                                    <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="taskCancelEdit" href={this.block}>cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, task)} name="taskConfirmEdit" href={this.block}>confirm</a>.</span>
+                                                </div> : <span onClick={this.editToogle.bind(this, section, i, task, j)} className={"taskName"}>{task["task"]}</span>
                                             }
                                             {(editTaskToggle===j && editSectionToggle===i)?<></>:<span className="taskActions">
-                                                <button onClick={this.editToogle.bind(this, i, task, j, "task")}>
+                                                <button onClick={this.editToogle.bind(this, section, i, task, j)}>
                                                     <svg className="bi bi-pencil-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                                         <path d="M15.502 1.94a.5.5 0 010 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 01.707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 00-.121.196l-.805 2.414a.25.25 0 00.316.316l2.414-.805a.5.5 0 00.196-.12l6.813-6.814z"/>
                                                         <path fillRule="evenodd" d="M1 13.5A1.5 1.5 0 002.5 15h11a1.5 1.5 0 001.5-1.5v-6a.5.5 0 00-1 0v6a.5.5 0 01-.5.5h-11a.5.5 0 01-.5-.5v-11a.5.5 0 01.5-.5H9a.5.5 0 000-1H2.5A1.5 1.5 0 001 2.5v11z" clipRule="evenodd"/>
