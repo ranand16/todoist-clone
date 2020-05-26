@@ -133,6 +133,7 @@ class Dashboard extends Component {
         if(e && e.currentTarget.getAttribute("name")){
             const name = e.currentTarget.getAttribute("name")
             switch(name){
+                case "sectionNameEdit":
                 case "taskCancelEdit":
                     this.editToogle(false, false, false, false);
                     break;
@@ -213,7 +214,7 @@ class Dashboard extends Component {
                                             {/* <DropdownItem header>Header</DropdownItem> */}
                                             {/* <DropdownItem divider /> */}
                                             {/* <DropdownItem disabled>Action</DropdownItem> */}
-                                            <DropdownItem>Edit</DropdownItem>
+                                            <DropdownItem><span onClick={this.editToogle.bind(this, section, i, null, null)}>Edit</span></DropdownItem>
                                             <DropdownItem>Remove</DropdownItem>
                                             <DropdownItem>Archive</DropdownItem>
                                         </DropdownMenu>
