@@ -6,6 +6,7 @@ import LeftPane from '../LeftPane'
 import RightPane from '../RightPane'
 import AddTaskModal from '../Modals/AddTask'
 import AddProjectModal from '../Modals/AddProject'
+import RemoveModal from '../Modals/RemoveProject'
 import fetchProjects from '../../Actions/fetchProjects'
 import createNewProject from "../../Utility/createProject"
 import { compose } from 'redux'
@@ -23,6 +24,7 @@ class DashboardContainer extends Component {
             project: null, // will be used while creating a new task for a project
             newTaskModalIsOpen: false,
             newProjectModalIsOpen: false,
+            removeModalToggle: false,
             profileProjects: [],
             profileProjs: null,
             selectedProjStructure: null,
@@ -32,7 +34,10 @@ class DashboardContainer extends Component {
             editTaskToggle: false, // editing task is on-going 
             editSectionToggle: false, // editing task's section
             // spinner
-            showSpinner: false
+            showSpinner: false,
+            removeType: false,
+            removeSectionToggle: false, // this will have section index to be removed
+            removeTaskToggle: false // this will have task index to be removed
         }
         this.dispProjects = null;
     }
@@ -83,6 +88,17 @@ class DashboardContainer extends Component {
      */
     toggleNewProjectModal = () => {
         this.setState(prevState => ({ newProjectModalIsOpen: !prevState.newProjectModalIsOpen }));
+    }
+
+    /**
+     * This functon toggles the modal used for removing a task or a section
+     */
+    toggleRemoveModal = () => {
+        this.setState(prevState => ({ removeModalToggle: !prevState.removeModalToggle }));
+    }
+
+    toggleRemoveVars = () => {
+        this.setState({removeSectionToggle: false, removeType: false, showSpinner: false});
     }
 
     /**
@@ -149,6 +165,22 @@ class DashboardContainer extends Component {
     toggleEdit = (editTaskToggle, editSectionToggle) => {
         this.setState({ editTaskToggle, editSectionToggle })
     }
+
+    toggleRemove = (sectionIndex, taskIndex, type) => {
+        if(type){
+            switch(type){
+                case "section":
+                    this.setState({ removeSectionToggle: sectionIndex, removeType: type })
+                    break;
+                case "task":
+                    this.setState({ removeSectionToggle: sectionIndex, removeTaskToggle: taskIndex, removeType: type })
+                    break;
+                default:
+                    break;
+            }
+            this.toggleRemoveModal();
+        }
+    }
     /**
      * after pressing confirm/enter after typing a new task name.
      */
@@ -169,8 +201,7 @@ class DashboardContainer extends Component {
             newUser["projects"][projIndex]["sections"] = editedSections
             delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
             return updateUserDetails(currentUser.uid, newUser).then((res)=>{
-                // console.log(res)
-                this.setState({ editTaskToggle: false, editSectionToggle: false, showSpinner: false });
+                this.toggleTaskSection()
                 return res
             }).catch((err)=>{
                 console.log(err)
@@ -179,7 +210,7 @@ class DashboardContainer extends Component {
             // console.log(sections, editSectionToggle, sections[editSectionToggle]["tasks"], editTaskToggle, sections[editSectionToggle]["tasks"][editTaskToggle])
             sections[editSectionToggle]["tasks"][editTaskToggle] = newTaskValue
             return updateSection(selectedProj, sections).then((res)=>{
-                this.setState({ editTaskToggle: false, editSectionToggle: false, showSpinner: false });
+                this.toggleTaskSection()
                 return res
             }).catch((err)=>{
                 console.log(err);
@@ -192,13 +223,9 @@ class DashboardContainer extends Component {
     confirmEditSection = async (updatedSection) => {
         let { selectedProj, editSectionToggle } = this.state;
         let { updateSection, updateUserDetails, profile, firebase } = this.props;
-        // console.log(this.dispProjects, selectedProj)
         let { projectId, sections } = this.dispProjects.find(proj=>proj["id"] === selectedProj)
-        // console.log(sections, editSectionToggle, updatedSection)
         let editedSections = JSON.parse(JSON.stringify(sections))
         editedSections[editSectionToggle] = updatedSection;
-        // console.log(editedSections)
-        // return 
         let currentUser = firebase.auth().currentUser
         if(projectId === "Inbox" || projectId === "Today"){
             let newUser = Object.assign({}, profile);
@@ -207,7 +234,8 @@ class DashboardContainer extends Component {
             delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
             return updateUserDetails(currentUser.uid, newUser).then((res)=>{
                 // console.log(res)
-                this.setState({ editTaskToggle: false, editSectionToggle: false, showSpinner: false });
+                this.toggleTaskSection()
+                // this.setState({ editTaskToggle: false, editSectionToggle: false, showSpinner: false });
                 return res
             }).catch((err)=>{
                 console.log(err)
@@ -215,16 +243,92 @@ class DashboardContainer extends Component {
         } else {
             updateSection(selectedProj, editedSections).then((response)=>{
                 // console.log(response)
-                this.setState({ editTaskToggle: false, editSectionToggle: false, showSpinner: false });
+                this.toggleTaskSection()
+                // this.setState({ editTaskToggle: false, editSectionToggle: false, showSpinner: false });
             }).catch((err)=>{
                 console.log(err)
             })
         }
     }
 
+    confirmRemoval = () => {
+        const { selectedProj, removeSectionToggle, removeTaskToggle, removeType } = this.state
+        const { updateSection, updateUserDetails, profile, firebase } = this.props;
+        let { sections, projectId } = this.dispProjects.find(proj=>proj["id"] === selectedProj)
+        console.log(removeType)
+        switch(removeType){
+            case "section": 
+                console.log(selectedProj)
+                if(projectId === "Inbox" || projectId === "Today"){
+                    let currentUser = firebase.auth().currentUser
+                    let newUser = Object.assign({}, profile);
+                    let projIndex = newUser["projects"].findIndex(proj=> proj["projectId"]===projectId)
+                    newUser["projects"][projIndex]["sections"].splice(removeSectionToggle, 1)
+                    delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
+                    updateUserDetails(currentUser.uid, newUser).then((res)=>{
+                        this.toggleRemoveModal();
+                        this.toggleRemoveVars();
+                        return res
+                    }).catch((err)=>{
+                        this.toggleRemoveModal();
+                        this.toggleRemoveVars();
+                        console.log(err)
+                    })
+                } else {
+                    sections.splice(removeSectionToggle, 1)
+                    updateSection(selectedProj, sections).then((res)=>{
+                        this.toggleRemoveModal();
+                        this.toggleRemoveVars();
+                        return res
+                    }).catch((err)=>{
+                        this.toggleRemoveModal();
+                        this.toggleRemoveVars();
+                        return err
+                    })
+                }
+                break;
+            case "task":
+                console.log(removeSectionToggle, removeTaskToggle, removeType)
+                console.log("task to be removed")
+                if(projectId === "Inbox" || projectId === "Today"){
+                    let currentUser = firebase.auth().currentUser
+                    let newUser = Object.assign({}, profile);
+                    let projIndex = newUser["projects"].findIndex(proj=> proj["projectId"]===projectId)
+                    newUser["projects"][projIndex]["sections"][removeSectionToggle]["tasks"].splice(removeTaskToggle, 1)
+                    delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
+                    updateUserDetails(currentUser.uid, newUser).then((res)=>{
+                        this.toggleRemoveModal();
+                        this.toggleRemoveVars();
+                        return res
+                    }).catch((err)=>{
+                        this.toggleRemoveModal();
+                        this.toggleRemoveVars();
+                        console.log(err)
+                    })
+                } else {
+                    let targetSection = Object.assign({}, sections[removeSectionToggle])
+                    targetSection["tasks"].splice(removeTaskToggle, 1)
+                    sections[removeSectionToggle] = targetSection
+                    updateSection(selectedProj, sections).then((res)=>{
+                        this.toggleRemoveModal();
+                        this.toggleRemoveVars();
+                        return res
+                    }).catch((err)=>{
+                        this.toggleRemoveModal();
+                        this.toggleRemoveVars();
+                        return err
+                    })
+                }
+                break;
+            default:
+                break;
+        }
+
+    }
+
     render(){
         // console.log(this.props, this.state)
-        let { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editTaskToggle, editSectionToggle, showSpinner } = this.state
+        let { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editTaskToggle, editSectionToggle, showSpinner, removeModalToggle } = this.state
         let { profile, profile2, projects, uid } = this.props;
         this.profile = profile2?profile2[uid]?profile2[uid]:profile:profile;
         let profileProjs = profile2?profile2[uid]?profile2[uid]["projects"].filter((proj)=>{
@@ -254,6 +358,14 @@ class DashboardContainer extends Component {
                     addNewTask={this.addNewTask} 
                 />
                 
+                <RemoveModal 
+                    isOpen={removeModalToggle} 
+                    toggleRemoveModal={this.toggleRemoveModal} 
+                    confirmRemoval={this.confirmRemoval}
+                    toggleRemoveVars={this.toggleRemoveVars}
+
+                />
+
                 {/* UI */}
                 <CustomNavbar firebase={this.props.firebase}/>
                 <div className={"contents-container"}>
@@ -272,6 +384,7 @@ class DashboardContainer extends Component {
                         editTaskToggle = {editTaskToggle}// editing task is on-going 
                         editSectionToggle = {editSectionToggle}// editing task's section
                         updateToggle = {this.toggleEdit}
+                        toggleRemove={this.toggleRemove}
                         confirmEditTask = {this.confirmEditTask}
                         confirmEditSection = {this.confirmEditSection}
                     />

@@ -68,6 +68,16 @@ class Dashboard extends Component {
         this.setState({ editedTaskValue: taskName, editedSectionValue: sectionName })
     }
 
+    removeToogle = (sectionIndex, taskIndex, e) => {
+        console.log(sectionIndex, taskIndex);
+        const { toggleRemove } = this.props;
+        if((taskIndex!==false || taskIndex!==null || taskIndex!==undefined) && (sectionIndex!==false || sectionIndex!==null || sectionIndex!==undefined)) {
+            toggleRemove(sectionIndex, taskIndex, "task");
+        } else if((sectionIndex!==false || sectionIndex!==null || sectionIndex!==undefined) && (taskIndex===null || taskIndex===undefined || taskIndex===false)) {
+            toggleRemove(sectionIndex, taskIndex, "section");
+        }
+    }
+
     /**
      * This function is onchange handler for task/section name edit
      */
@@ -206,8 +216,8 @@ class Dashboard extends Component {
                                     }
                                     <ButtonDropdown isOpen={sectionHamToggle===i} toggle={this.toggleSectionHamToggle.bind(this, i)}>
                                         <DropdownToggle style={{ color: "grey" }} color="link">
-                                            <svg class="bi bi-three-dots-vertical" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0-5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0-5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" clip-rule="evenodd"/>
+                                            <svg className="bi bi-three-dots-vertical" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                <path fillRule="evenodd" d="M9.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0-5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0-5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" clipRule="evenodd"/>
                                             </svg>
                                         </DropdownToggle>
                                         <DropdownMenu>
@@ -215,7 +225,7 @@ class Dashboard extends Component {
                                             {/* <DropdownItem divider /> */}
                                             {/* <DropdownItem disabled>Action</DropdownItem> */}
                                             <DropdownItem><span onClick={this.editToogle.bind(this, section, i, null, null)}>Edit</span></DropdownItem>
-                                            <DropdownItem>Remove</DropdownItem>
+                                            <DropdownItem><span onClick={this.removeToogle.bind(this, section, i, null, null)}>Remove</span></DropdownItem>
                                             <DropdownItem>Archive</DropdownItem>
                                         </DropdownMenu>
                                     </ButtonDropdown>    
@@ -244,7 +254,7 @@ class Dashboard extends Component {
                                                     </svg>
                                                 </button>
                                                 <button>
-                                                    <svg className="bi bi-dash-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <svg onClick={this.removeToogle.bind(this, i, j)} className="bi bi-dash-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                                         <path fillRule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clipRule="evenodd"/>
                                                         <path fillRule="evenodd" d="M3.5 8a.5.5 0 01.5-.5h8a.5.5 0 010 1H4a.5.5 0 01-.5-.5z" clipRule="evenodd"/>
                                                     </svg>
