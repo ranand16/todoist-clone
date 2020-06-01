@@ -11,7 +11,8 @@ class Dashboard extends Component {
             newSectionName: "", // new section name when adding a new section to this project
             editedTaskValue: "", // on-going editing task task updated task value,
             editedSectionValue: "", // on-going editing task task updated task value,
-            sectionHamToggle: false
+            sectionHamToggle: false, // section hamburger menu
+            projectHamToggle: false // project hamburger menu
         };
     }
 
@@ -36,6 +37,13 @@ class Dashboard extends Component {
         this.setState(prevState=>  { 
             if(prevState.sectionHamToggle===sectionIndex) return { sectionHamToggle: false }
             else return { sectionHamToggle: sectionIndex }
+        })
+    }
+
+    toggleProjectHamToggle = (projectId) => {
+        this.setState(prevState=>  { 
+            if(prevState.projectHamToggle===projectId) return { projectHamToggle: false }
+            else return { projectHamToggle: projectId }
         })
     }
     
@@ -68,13 +76,17 @@ class Dashboard extends Component {
         this.setState({ editedTaskValue: taskName, editedSectionValue: sectionName })
     }
 
-    removeToogle = (sectionIndex, taskIndex, e) => {
-        console.log(sectionIndex, taskIndex);
+    removeToogle = (sectionIndex, taskIndex, project, e) => {
+        console.log(sectionIndex, taskIndex, project);
         const { toggleRemove } = this.props;
-        if((taskIndex!==false || taskIndex!==null || taskIndex!==undefined) && (sectionIndex!==false || sectionIndex!==null || sectionIndex!==undefined)) {
-            toggleRemove(sectionIndex, taskIndex, "task");
-        } else if((sectionIndex!==false || sectionIndex!==null || sectionIndex!==undefined) && (taskIndex===null || taskIndex===undefined || taskIndex===false)) {
-            toggleRemove(sectionIndex, taskIndex, "section");
+        if((taskIndex!==false || taskIndex!==null || taskIndex!==undefined) && (sectionIndex!==false || sectionIndex!==null || sectionIndex!==undefined) && !project) {
+            console.log(sectionIndex, taskIndex, "task");
+            toggleRemove(sectionIndex, taskIndex, null, "task");
+        } else if((sectionIndex!==false || sectionIndex!==null || sectionIndex!==undefined) && (taskIndex===null || taskIndex===undefined || taskIndex===false) && !project) {
+            console.log(sectionIndex, taskIndex, "section");
+            toggleRemove(sectionIndex, taskIndex, null, "section");
+        } else if(!sectionIndex && !taskIndex && project){
+            if(project["projectId"]!=="Today" || project["projectId"]!=="Inbox") toggleRemove(sectionIndex, taskIndex, project["id"], "project");
         }
     }
 
@@ -197,12 +209,32 @@ class Dashboard extends Component {
 
     render() {
         const { projectToDisplay, editTaskToggle, editSectionToggle } = this.props
-        const { addSectionForm, editedTaskValue, editedSectionValue, newSectionName, sectionHamToggle } = this.state
-        console.log(editSectionToggle, editTaskToggle);
+        const { addSectionForm, editedTaskValue, editedSectionValue, newSectionName, sectionHamToggle, projectHamToggle } = this.state
+        if(!projectToDisplay) return <div className={"nocontents"}>No project selected</div>
+
         return(
+            
             <div className={"contents"}>
                 <div>
-                    {<span><h2>{projectToDisplay?projectToDisplay["projectId"]:""}</h2></span>}<br/>
+                    {
+                        <span>
+                            <h2 className={"flexHeader"}>
+                                {projectToDisplay?projectToDisplay["projectId"]:""}
+                                {(projectToDisplay["projectId"]!=="Today" && projectToDisplay["projectId"]!=="Inbox") && <ButtonDropdown className={"dropDwonMwnu"} isOpen={projectHamToggle} toggle={this.toggleProjectHamToggle.bind(this, projectToDisplay["projectId"])}>
+                                    <DropdownToggle style={{ color: "grey" }} color="link">
+                                        <svg className="bi bi-three-dots-vertical" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                            <path fillRule="evenodd" d="M9.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0-5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0-5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" clipRule="evenodd"/>
+                                        </svg>
+                                    </DropdownToggle>
+                                    <DropdownMenu>
+                                        {/* <DropdownItem><span onClick={this.editToogle.bind(this, section, i, null, null)}>Edit</span></DropdownItem> */}
+                                        <DropdownItem><span onClick={this.removeToogle.bind(this, null, null, projectToDisplay)}>Remove</span></DropdownItem>
+                                    </DropdownMenu>
+                                </ButtonDropdown>}
+                            </h2>
+                        </span>
+                    }
+                    <br/>
                     {projectToDisplay?projectToDisplay.sections.length>0?projectToDisplay.sections.map((section, i)=>{
                         return (
                             <div className="section" key={section["name"]?section["name"]:i}>
@@ -225,7 +257,7 @@ class Dashboard extends Component {
                                             {/* <DropdownItem divider /> */}
                                             {/* <DropdownItem disabled>Action</DropdownItem> */}
                                             <DropdownItem><span onClick={this.editToogle.bind(this, section, i, null, null)}>Edit</span></DropdownItem>
-                                            <DropdownItem><span onClick={this.removeToogle.bind(this, section, i, null, null)}>Remove</span></DropdownItem>
+                                            <DropdownItem><span onClick={this.removeToogle.bind(this, section, i, null)}>Remove</span></DropdownItem>
                                             <DropdownItem>Archive</DropdownItem>
                                         </DropdownMenu>
                                     </ButtonDropdown>    
@@ -254,7 +286,7 @@ class Dashboard extends Component {
                                                     </svg>
                                                 </button>
                                                 <button>
-                                                    <svg onClick={this.removeToogle.bind(this, i, j)} className="bi bi-dash-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <svg onClick={this.removeToogle.bind(this, i, j, null)} className="bi bi-dash-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                                         <path fillRule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clipRule="evenodd"/>
                                                         <path fillRule="evenodd" d="M3.5 8a.5.5 0 01.5-.5h8a.5.5 0 010 1H4a.5.5 0 01-.5-.5z" clipRule="evenodd"/>
                                                     </svg>

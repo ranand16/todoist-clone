@@ -92,3 +92,10 @@
     justify-content: space-between;
     align-items: center;
 }
+
+.flexHeader{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
