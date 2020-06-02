@@ -4,6 +4,7 @@ const AddProjectModal = (props) => {
     const [project, setProject] = useState(""); // "" not null
     const { isOpen } = props;
     const toggle = () => {
+        setProject("");
         props.toggleNewProjectModal();
     }
 
@@ -14,6 +15,7 @@ const AddProjectModal = (props) => {
     const addProject = () => {
       if(project==="") return; // guarding
       props.addNewProject(project);
+      setProject("");
     }
 
     return (

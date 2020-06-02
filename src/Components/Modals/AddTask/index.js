@@ -4,6 +4,7 @@ const AddTaskModal = (props) => {
     const [task, setTask] = useState("");
     const { isOpen } = props;
     const toggle = () => {
+        setTask("");
         props.toggleNewTaskModal();
     }
 
@@ -14,6 +15,7 @@ const AddTaskModal = (props) => {
     const addTask = () => {
       if(task==="") return;
       props.addNewTask({task:task});
+      setTask("");
     }
 
     return (
