@@ -11,6 +11,7 @@ class Dashboard extends Component {
             newSectionName: "", // new section name when adding a new section to this project
             editedTaskValue: "", // on-going editing task task updated task value,
             editedSectionValue: "", // on-going editing task task updated task value,
+            editedProjectValue: "", // on-going editing task task updated task value,
             sectionHamToggle: false, // section hamburger menu
             projectHamToggle: false // project hamburger menu
         };
@@ -21,11 +22,11 @@ class Dashboard extends Component {
     }
 
     documentKeyDown = (e) => {
-        console.log(e, e.keyCode)
+        // console.log(e, e.keyCode)
         if(e && e.keyCode){
             switch(e.keyCode){
                 case 27: // this is escape
-                    this.editToogle(false, false, false, false);
+                    this.editToogle(null, null, null, null, null);
                     break;
                 default: 
                     break;
@@ -67,13 +68,14 @@ class Dashboard extends Component {
     /**
      * This function toggles edit input field for task or section edit.
      */
-    editToogle = (section, sectionIndex, task, taskIndex, e) => {
-        console.log(task, e, this.props)
+    editToogle = (section, sectionIndex, task, taskIndex, project, e) => {
+        // console.log(task, e, this.props)
+        console.log(project)
         const { updateToggle } = this.props;
         const taskName = task?task["task"]:"";
         const sectionName = section?section["name"]:"";
-        updateToggle(taskIndex, sectionIndex)
-        this.setState({ editedTaskValue: taskName, editedSectionValue: sectionName })
+        updateToggle(taskIndex, sectionIndex, project)
+        this.setState({ editedTaskValue: taskName, editedSectionValue: sectionName, editedProjectValue: project?project["projectId"]:"" })
     }
 
     removeToogle = (sectionIndex, taskIndex, project, e) => {
@@ -107,7 +109,7 @@ class Dashboard extends Component {
         if(e && e.keyCode){
             switch(e.keyCode){
                 case 27: // this is escape
-                    this.editToogle(false, false, false, false);
+                    this.editToogle(null, null, null, null, null);
                     break;
                 case 13: // this is confirm
                     this.confirmEdit(task, null, e);
@@ -127,18 +129,44 @@ class Dashboard extends Component {
     }
 
     /**
-     * This function deals with esc and enter button press from keyboard while editing task or section name
+     * This function is onchange handler for project name edit
+     */
+    editedProjectValue = (e) => {
+        console.log(e, e.key)
+        this.setState({ editedProjectValue: e.target.value?e.target.value:"" })   
+    }
+
+    /**
+     * This function deals with esc and enter button press from keyboard while editing section name
      */
     editedSectionKeyValue = (section, e) => {
-        console.log(e, e.keyCode)
         // 27 for esc 13 for enter
         if(e && e.keyCode){
             switch(e.keyCode){
                 case 27: // this is escape
-                    this.editToogle(false, false, false, false);
+                    this.editToogle(null, null, null, null, null);
                     break;
                 case 13: // this is confirm
                     this.confirmEdit(null, section, e);
+                    break;
+                default: 
+                    break;
+            }
+        }
+    }
+
+    /**
+     * This function deals with esc and enter button press from keyboard while editing project name
+     */
+    editedProjectKeyValue = (project, e) => {
+        // 27 for esc 13 for enter
+        if(e && e.keyCode){
+            switch(e.keyCode){
+                case 27: // this is escape
+                    this.editToogle(null, null, null, null, null);
+                    break;
+                case 13: // this is confirm
+                    this.confirmEdit(null, project, e);
                     break;
                 default: 
                     break;
@@ -155,9 +183,10 @@ class Dashboard extends Component {
         if(e && e.currentTarget.getAttribute("name")){
             const name = e.currentTarget.getAttribute("name")
             switch(name){
+                case "projectNameEdit":
                 case "sectionNameEdit":
                 case "taskCancelEdit":
-                    this.editToogle(false, false, false, false);
+                    this.editToogle(null, null, null, null, null);
                     break;
                 default: 
                     break;
@@ -170,9 +199,8 @@ class Dashboard extends Component {
      */
     confirmEdit = (task, section, e) => {
         console.log(task, e)
-        const { confirmEditTask, confirmEditSection } = this.props;
-        console.log(confirmEditSection)
-        const { editedTaskValue, editedSectionValue } = this.state
+        const { confirmEditTask, confirmEditSection, confirmEditProject } = this.props;
+        const { editedTaskValue, editedSectionValue, editedProjectValue } = this.state
         if(e && e.currentTarget.getAttribute("name")){
             const name = e.currentTarget.getAttribute("name")
             console.log(name)
@@ -197,6 +225,18 @@ class Dashboard extends Component {
                         this.setState({ editedSectionValue: "" });
                     })
                     break;
+                case "projectNameEdit":
+                    console.log("projectNameEdit")
+                    confirmEditProject(editedProjectValue).then((response)=>{
+                        console.log(response)
+                        if(response["status"]){
+                            // success
+                        } else {
+                            // there was an error
+                        }
+                        this.editToogle(null, null, null, null, null);
+                    })
+                    break;
                 default: 
                     break;
             }
@@ -208,18 +248,24 @@ class Dashboard extends Component {
     }
 
     render() {
-        const { projectToDisplay, editTaskToggle, editSectionToggle } = this.props
-        const { addSectionForm, editedTaskValue, editedSectionValue, newSectionName, sectionHamToggle, projectHamToggle } = this.state
+        const { projectToDisplay, editTaskToggle, editSectionToggle, editProjectToggle } = this.props
+        const { addSectionForm, editedTaskValue, editedSectionValue, newSectionName, sectionHamToggle, projectHamToggle, editedProjectValue } = this.state
         if(!projectToDisplay) return <div className={"nocontents"}>No project selected</div>
-
+        console.log(editProjectToggle)
         return(
-            
             <div className={"contents"}>
                 <div>
                     {
                         <span>
                             <h2 className={"flexHeader"}>
-                                {projectToDisplay?projectToDisplay["projectId"]:""}
+                                {projectToDisplay?
+                                    editProjectToggle?
+                                        <div>
+                                            <Input name="projectNameEdit" value={editedProjectValue} onChange={this.editedProjectValue} onKeyDown={this.editedProjectKeyValue.bind(this, projectToDisplay)} autoFocus />
+                                            <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="projectNameEdit" href={this.block}>cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, null, null)} name="projectNameEdit" href={this.block}>confirm</a>.</span>
+                                        </div>
+                                    :<span onClick={(projectToDisplay["projectId"]!=="Today"&&projectToDisplay["projectId"]!=="Inbox")?this.editToogle.bind(this, null, null, null, null, projectToDisplay):this.block}>{projectToDisplay["projectId"]}</span>                                            
+                                :""}
                                 {(projectToDisplay["projectId"]!=="Today" && projectToDisplay["projectId"]!=="Inbox") && <ButtonDropdown className={"dropDwonMwnu"} isOpen={projectHamToggle} toggle={this.toggleProjectHamToggle.bind(this, projectToDisplay["projectId"])}>
                                     <DropdownToggle style={{ color: "grey" }} color="link">
                                         <svg className="bi bi-three-dots-vertical" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -227,7 +273,7 @@ class Dashboard extends Component {
                                         </svg>
                                     </DropdownToggle>
                                     <DropdownMenu>
-                                        {/* <DropdownItem><span onClick={this.editToogle.bind(this, section, i, null, null)}>Edit</span></DropdownItem> */}
+                                        <DropdownItem><span onClick={this.editToogle.bind(this, null, null, null, null, projectToDisplay)}>Edit</span></DropdownItem>
                                         <DropdownItem><span onClick={this.removeToogle.bind(this, null, null, projectToDisplay)}>Remove</span></DropdownItem>
                                     </DropdownMenu>
                                 </ButtonDropdown>}
@@ -244,7 +290,7 @@ class Dashboard extends Component {
                                             <Input name="sectionNameEdit" value={editedSectionValue} onChange={this.editedSectionValue} onKeyDown={this.editedSectionKeyValue.bind(this, section)} autoFocus />
                                             <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="sectionNameEdit" href={this.block}>cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, null, section)} name="sectionNameEdit" href={this.block}>confirm</a>.</span>
                                         </div>:
-                                        <span onClick={this.editToogle.bind(this, section, i, null, null)}>{section["name"]}</span>
+                                        <span onClick={this.editToogle.bind(this, section, i, null, null, null)}>{section["name"]}</span>
                                     }
                                     <ButtonDropdown isOpen={sectionHamToggle===i} toggle={this.toggleSectionHamToggle.bind(this, i)}>
                                         <DropdownToggle style={{ color: "grey" }} color="link">
@@ -256,7 +302,7 @@ class Dashboard extends Component {
                                             {/* <DropdownItem header>Header</DropdownItem> */}
                                             {/* <DropdownItem divider /> */}
                                             {/* <DropdownItem disabled>Action</DropdownItem> */}
-                                            <DropdownItem><span onClick={this.editToogle.bind(this, section, i, null, null)}>Edit</span></DropdownItem>
+                                            <DropdownItem><span onClick={this.editToogle.bind(this, section, i, null, null, null)}>Edit</span></DropdownItem>
                                             <DropdownItem><span onClick={this.removeToogle.bind(this, section, i, null)}>Remove</span></DropdownItem>
                                             <DropdownItem>Archive</DropdownItem>
                                         </DropdownMenu>
@@ -270,10 +316,10 @@ class Dashboard extends Component {
                                                 <div>
                                                     <Input  name="taskConfirmEdit" value={editedTaskValue} onChange={this.editedTaskValue} onKeyDown={this.editedTaskKeyValue.bind(this, task)} autoFocus />
                                                     <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="taskCancelEdit" href={this.block}>cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, task)} name="taskConfirmEdit" href={this.block}>confirm</a>.</span>
-                                                </div> : <span onClick={this.editToogle.bind(this, section, i, task, j)} className={"taskName"}>{task["task"]}</span>
+                                                </div> : <span onClick={this.editToogle.bind(this, section, i, task, j, null)} className={"taskName"}>{task["task"]}</span>
                                             }
                                             {(editTaskToggle===j && editSectionToggle===i)?<></>:<span className="taskActions">
-                                                <button onClick={this.editToogle.bind(this, section, i, task, j)}>
+                                                <button onClick={this.editToogle.bind(this, section, i, task, j, null)}>
                                                     <svg className="bi bi-pencil-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                                         <path d="M15.502 1.94a.5.5 0 010 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 01.707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 00-.121.196l-.805 2.414a.25.25 0 00.316.316l2.414-.805a.5.5 0 00.196-.12l6.813-6.814z"/>
                                                         <path fillRule="evenodd" d="M1 13.5A1.5 1.5 0 002.5 15h11a1.5 1.5 0 001.5-1.5v-6a.5.5 0 00-1 0v6a.5.5 0 01-.5.5h-11a.5.5 0 01-.5-.5v-11a.5.5 0 01.5-.5H9a.5.5 0 000-1H2.5A1.5 1.5 0 001 2.5v11z" clipRule="evenodd"/>

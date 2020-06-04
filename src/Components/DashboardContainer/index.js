@@ -33,6 +33,7 @@ class DashboardContainer extends Component {
             //dashboard
             editTaskToggle: false, // editing task is on-going 
             editSectionToggle: false, // editing task's section
+            editProjectToggle: false, // editing project
             // spinner
             showSpinner: false,
             removeType: false,
@@ -163,8 +164,10 @@ class DashboardContainer extends Component {
         })
     }
 
-    toggleEdit = (editTaskToggle, editSectionToggle) => {
-        this.setState({ editTaskToggle, editSectionToggle })
+    toggleEdit = (editTaskToggle, editSectionToggle, project) => {
+        console.log(editTaskToggle, editSectionToggle, project)
+        this.setState({ editTaskToggle, editSectionToggle, editProjectToggle: false })
+        if(project && (project["projectId"]!=="Today" || project["projectId"]!=="Inbox")) this.setState({ editProjectToggle: project["id"] })
     }
 
     toggleRemove = (sectionIndex, taskIndex, projectDocId, type) => {
@@ -255,6 +258,31 @@ class DashboardContainer extends Component {
         }
     }
 
+    error = async (error) => {
+        return new Error(error)
+    }
+
+    /**
+     * This gets triggered when you press confirm after editing project name
+     */
+    confirmEditProject = async (newName) => {
+        const { editProject } = this.props;
+        const { selectedProj } = this.state;
+        const project = this.dispProjects.find(proj=>proj["id"] === selectedProj)
+        let dupProject = Object.assign({}, project);
+        dupProject["projectId"] = newName;
+        console.log(dupProject, newName);
+        console.log({ id: dupProject["id"], dupProject });
+        return editProject(dupProject["id"], dupProject).then(()=>{
+            return { status: true }
+        }).catch((err)=>{
+            return { status: false, error: err }
+        })
+    }
+
+    /**
+     * This function gets called when someone presses confirm on the remove dialog box
+     */
     confirmRemoval = () => {
         const { selectedProj, removeSectionToggle, removeTaskToggle, removeType } = this.state
         const { updateSection, updateUserDetails, profile, deleteDoc, firebase } = this.props;
@@ -339,12 +367,11 @@ class DashboardContainer extends Component {
             default:
                 break;
         }
-
     }
 
     render(){
         // console.log(this.props, this.state)
-        let { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editTaskToggle, editSectionToggle, showSpinner, removeModalToggle, removeType } = this.state
+        let { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editTaskToggle, editSectionToggle, showSpinner, removeModalToggle, removeType, editProjectToggle } = this.state
         let { profile, profile2, projects, uid } = this.props;
         this.profile = profile2?profile2[uid]?profile2[uid]:profile:profile;
         let profileProjs = profile2?profile2[uid]?profile2[uid]["projects"].filter((proj)=>{
@@ -400,10 +427,12 @@ class DashboardContainer extends Component {
                         addNewSectionToProject = {this.addNewSectionToProject}
                         editTaskToggle = {editTaskToggle}// editing task is on-going 
                         editSectionToggle = {editSectionToggle}// editing task's section
+                        editProjectToggle = {editProjectToggle} // editing project's id
                         updateToggle = {this.toggleEdit}
                         toggleRemove={this.toggleRemove}
                         confirmEditTask = {this.confirmEditTask}
                         confirmEditSection = {this.confirmEditSection}
+                        confirmEditProject = {this.confirmEditProject}
                     />
                     <RightPane />
                 </div>
@@ -435,7 +464,9 @@ const highOrderWrap = compose(
         updateUserDetails: props => async (userDocId, usersDetail) => props.firestore.collection('userDetails').doc(userDocId).set(usersDetail),
         addNewProjectToProjects: props => async (project) => props.firestore.collection('projects').doc(project["id"]).set(project),
         addNewProjectToUserProfile: props => async (userDocId, newProj) => props.firestore.collection('userDetails').doc(userDocId).update({projects: props.firebase.firestore.FieldValue.arrayUnion(newProj) }),
-        deleteDoc: props => async (collectionName, docId) => props.firestore.collection(collectionName).doc(docId).delete()
+        deleteDoc: props => async (collectionName, docId) => props.firestore.collection(collectionName).doc(docId).delete(),
+        editProject: props => async (docId, newProjObj) => props.firestore.collection("projects").doc(docId).update(newProjObj)
+        
     }), 
     // firestoreConnect((state, props) => { 
     //     return [{ collection: 'userDetails', doc: state.authReducer["uid"] }]
