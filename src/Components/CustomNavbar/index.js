@@ -1,5 +1,6 @@
 import React from 'react';
-import { Form } from 'reactstrap';
+import { Form, Button } from 'reactstrap';
+import { withRouter } from 'react-router-dom';
 
 const CustomNavbar = (props) => {
   const onSearch = (e) => {
@@ -8,7 +9,9 @@ const CustomNavbar = (props) => {
 
   const onLogout = (e) => {
     console.log(props.firebase)
-    props.firebase.doSignOut();
+    props.firebase.logout().then(()=>{
+      props.history.push({ pathname: '/' })
+    });
   }
 
   return (
@@ -19,9 +22,9 @@ const CustomNavbar = (props) => {
         <Form id="searchNav" onSubmit={onSearch} inline>
           <input id="searchNavValue" />
         </Form>
-        <a id="logoutNav" href="/" onClick={onLogout}>Logout</a>
+        <Button id="logoutNav" color="link" onClick={onLogout} style={{ color: "white" }}>Logout</Button>
       </nav>
   );
 }
 
-export default CustomNavbar;
+export default withRouter(CustomNavbar);
