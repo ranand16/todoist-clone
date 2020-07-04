@@ -55,7 +55,7 @@ class DashboardContainer extends Component {
             return null
         })
         // this.props.fetchProjects(projectDocIds, firebase).then((res)=>{// for the bug  that the new project is not live updated, projectDocIds is only set once during the component did mount
-        this.props.fetchProjects(firebase).then((res)=>{// for the bug  that the new project is not live updated, projectDocIds is only set once during the component did mount
+        this.props.fetchProjects(firebase).then(()=>{// for the bug  that the new project is not live updated, projectDocIds is only set once during the component did mount
             // console.log(this.state)
         })
     }
@@ -66,9 +66,8 @@ class DashboardContainer extends Component {
      */
     switchProject = async (id, projectName) => {
         console.log(id, projectName, this.props)
-        let { fetchProject } = this.props;
         let { selectedProj } = this.state;
-        if(id && id !== selectedProj){
+        if(id && id !== selectedProj){  
             this.setState({ 
                 selectedProj: id,
                 editTaskToggle: false, editSectionToggle: false // resetting if something is being edited while switching project
@@ -108,7 +107,7 @@ class DashboardContainer extends Component {
      */
     addNewTask = async (task) => {
         let { updateUserDetails, updateSection, firebase, profile } = this.props;
-        let { selectedProj, selectedProjStructure, selectedsectionIndex } = this.state;
+        let { selectedProjStructure, selectedsectionIndex } = this.state;
         let currentUser = firebase.auth().currentUser
         let selected = {"Today":1, "Inbox": 0};
         task["date"] = Date.now();
@@ -129,7 +128,6 @@ class DashboardContainer extends Component {
 
     addNewSectionToProject = async (name, project) => {
         let { updateUserDetails, updateSection, firebase, profile } = this.props;
-        let { selectedProj } = this.state;
         let currentUser = firebase.auth().currentUser
         let selected = {"Today":1, "Inbox": 0};
         let newSection = {
@@ -150,7 +148,7 @@ class DashboardContainer extends Component {
     }
 
     addNewProject = async (project) => {
-        let { addNewProjectToProjects, addNewProjectToUserProfile, firestore, firebase, profile } = this.props;
+        let { addNewProjectToProjects, addNewProjectToUserProfile, firestore, firebase } = this.props;
         let currentUser = firebase.auth().currentUser
         if(!project) return; // guarding
         let newProject = createNewProject(project, firestore);
