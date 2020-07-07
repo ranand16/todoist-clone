@@ -29,6 +29,7 @@ class DashboardContainer extends Component {
             profileProjs: null,
             selectedProjStructure: null,
             selectedsectionIndex: null,
+            toggleSettingsGear: false, // toggle the settings panel clicking the gear icon
 
             //dashboard
             editTaskToggle: false, // editing task is on-going 
@@ -185,6 +186,9 @@ class DashboardContainer extends Component {
             }
             this.toggleRemoveModal();
         }
+    }
+    toggleSettingsGear = () => {
+        this.setState((prevState)=>{ return { toggleSettingsGear: !prevState.toggleSettingsGear } });
     }
     /**
      * after pressing confirm/enter after typing a new task name.
@@ -369,7 +373,7 @@ class DashboardContainer extends Component {
 
     render(){
         // console.log(this.props, this.state)
-        let { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editTaskToggle, editSectionToggle, showSpinner, removeModalToggle, removeType, editProjectToggle } = this.state
+        let { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editProjectMembersModalIsOpen, editTaskToggle, editSectionToggle, showSpinner, removeModalToggle, removeType, editProjectToggle } = this.state
         let { profile, profile2, projects, uid } = this.props;
         this.profile = profile2?profile2[uid]?profile2[uid]:profile:profile;
         let profileProjs = profile2?profile2[uid]?profile2[uid]["projects"].filter((proj)=>{
