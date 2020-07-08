@@ -6,6 +6,7 @@ import LeftPane from '../LeftPane'
 import RightPane from '../RightPane'
 import AddTaskModal from '../Modals/AddTask'
 import AddProjectModal from '../Modals/AddProject'
+import EditProfileModal from '../Modals/EditProfileModal'
 import RemoveModal from '../Modals/RemoveProject'
 import fetchProjects from '../../Actions/fetchProjects'
 import createNewProject from "../../Utility/createProject"
@@ -30,6 +31,7 @@ class DashboardContainer extends Component {
             selectedProjStructure: null,
             selectedsectionIndex: null,
             toggleSettingsGear: false, // toggle the settings panel clicking the gear icon
+            profileModalToggle: false, // toggle profile panel to edit profile details
 
             //dashboard
             editTaskToggle: false, // editing task is on-going 
@@ -188,8 +190,13 @@ class DashboardContainer extends Component {
         }
     }
     toggleSettingsGear = () => {
-        this.setState((prevState)=>{ return { toggleSettingsGear: !prevState.toggleSettingsGear } });
+        this.setState((prevState)=>{ return { settingsGearToggle: !prevState.settingsGearToggle } });
     }
+
+    toggleProfileModal = () => {
+        this.setState((prevState)=>{ return { profileModalToggle: !prevState.profileModalToggle } })
+    }
+
     /**
      * after pressing confirm/enter after typing a new task name.
      */
@@ -371,15 +378,31 @@ class DashboardContainer extends Component {
         }
     }
 
+    /**
+     * 
+     * @param {new first name} firstName 
+     * @param {new last name} lastName 
+     */
+    saveUserDetails = async (firstName, lastName) => {
+        let { updateUserDetails, firebase, profile } = this.props;
+        let currentUser = firebase.auth().currentUser
+        let newUser = Object.assign({}, profile);
+        newUser["firstName"] = firstName
+        newUser["lastName"] = lastName
+        delete newUser["isEmpty"];delete newUser["isLoaded"];delete newUser["token"];
+        return await updateUserDetails(currentUser.uid, newUser)
+    }
+
     render(){
         // console.log(this.props, this.state)
-        let { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editProjectMembersModalIsOpen, editTaskToggle, editSectionToggle, showSpinner, removeModalToggle, removeType, editProjectToggle } = this.state
+        let { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editProjectMembersModalIsOpen, settingsGearToggle, profileModalToggle, editTaskToggle, editSectionToggle, showSpinner, removeModalToggle, removeType, editProjectToggle } = this.state
         let { profile, profile2, projects, uid } = this.props;
         this.profile = profile2?profile2[uid]?profile2[uid]:profile:profile;
         let profileProjs = profile2?profile2[uid]?profile2[uid]["projects"].filter((proj)=>{
             if(proj["projectId"] === "Inbox" || proj["projectId"] === "Today") return proj
             return null
         }):null:null;
+
         if(!profileProjs) return ""
         let dispProjects = profileProjs.concat(projects.filter((item) => profileProjs.indexOf(item) < 0))
 
@@ -409,11 +432,21 @@ class DashboardContainer extends Component {
                     toggleRemoveModal={this.toggleRemoveModal} 
                     confirmRemoval={this.confirmRemoval}
                     toggleRemoveVars={this.toggleRemoveVars}
-
+                />
+                <EditProfileModal 
+                    isOpen={profileModalToggle}
+                    toggleProfileModal={this.toggleProfileModal}
+                    profile={profile}
+                    saveUserDetails={this.saveUserDetails}
                 />
 
                 {/* UI */}
-                <CustomNavbar firebase={this.props.firebase}/>
+                <CustomNavbar 
+                    isSettingOpen={settingsGearToggle}
+                    firebase={this.props.firebase} 
+                    toggleSettingsGear={this.toggleSettingsGear} 
+                    toggleProfileModal={this.toggleProfileModal} 
+                />
                 <div className={"contents-container"}>
                     <LeftPane 
                         projects={dispProjects}
