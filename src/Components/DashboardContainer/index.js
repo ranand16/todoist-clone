@@ -6,6 +6,7 @@ import LeftPane from '../LeftPane'
 import RightPane from '../RightPane'
 import AddTaskModal from '../Modals/AddTask'
 import AddProjectModal from '../Modals/AddProject'
+import EditMembersModal from '../Modals/EditMembers'
 import EditProfileModal from '../Modals/EditProfileModal'
 import RemoveModal from '../Modals/RemoveProject'
 import fetchProjects from '../../Actions/fetchProjects'
@@ -30,13 +31,14 @@ class DashboardContainer extends Component {
             profileProjs: null,
             selectedProjStructure: null,
             selectedsectionIndex: null,
-            toggleSettingsGear: false, // toggle the settings panel clicking the gear icon
+            settingsGearToggle: false, // toggle the settings panel clicking the gear icon
             profileModalToggle: false, // toggle profile panel to edit profile details
 
             //dashboard
             editTaskToggle: false, // editing task is on-going 
             editSectionToggle: false, // editing task's section
             editProjectToggle: false, // editing project
+            editProjectMembersModalIsOpen: false, // editing memebers in the project
             // spinner
             showSpinner: false,
             removeType: false,
@@ -48,9 +50,10 @@ class DashboardContainer extends Component {
     }
 
     componentDidMount(){
-        let { profile, firebase, firestore, uid, profile2 } = this.props;
-        firestore.setListener({ collection: 'userDetails', doc: uid })
-        let profileProjs = profile2?profile2[uid]?profile2[uid]["projects"]:profile["projects"]:profile["projects"];
+        let { profile, firebase, firestore, uid, userDetails } = this.props;
+        firestore.setListener({ collection: 'userDetails' })
+        // firestore.setListener({ collection: 'userDetails' })
+        let profileProjs = userDetails?userDetails[uid]?userDetails[uid]["projects"]:profile["projects"]:profile["projects"];
         profileProjs.map((project)=>{
             if(project["projectId"] === "Today") { 
                 this.setState({selectedProj: project["id"]});
@@ -62,6 +65,8 @@ class DashboardContainer extends Component {
             // console.log(this.state)
         })
     }
+
+
 
     /**
      * @param {id} id will have the project id that needs to be selected
@@ -154,14 +159,13 @@ class DashboardContainer extends Component {
         let { addNewProjectToProjects, addNewProjectToUserProfile, firestore, firebase } = this.props;
         let currentUser = firebase.auth().currentUser
         if(!project) return; // guarding
-        let newProject = createNewProject(project, firestore);
+        let newProject = createNewProject(project, currentUser.uid, firestore);
         addNewProjectToProjects(newProject).then(async(res)=>{
-            await addNewProjectToUserProfile(currentUser.uid, {id: newProject["id"]});
+            await addNewProjectToUserProfile(currentUser.uid, {id: newProject["id"], isOwner: true});
             this.props.fetchProjects(firebase).then((res)=>{// for the bug  that the new project is not live updated, projectDocIds is only set once during the component did mount
                 // console.log(res, this.state)
                 this.toggleNewProjectModal();
             })
-
         })
     }
 
@@ -189,6 +193,11 @@ class DashboardContainer extends Component {
             this.toggleRemoveModal();
         }
     }
+
+    toggleEditProjectMembers = () => {
+        this.setState((prevState)=>{ return { editProjectMembersModalIsOpen: !prevState.editProjectMembersModalIsOpen } })
+    }
+
     toggleSettingsGear = () => {
         this.setState((prevState)=>{ return { settingsGearToggle: !prevState.settingsGearToggle } });
     }
@@ -396,9 +405,9 @@ class DashboardContainer extends Component {
     render(){
         // console.log(this.props, this.state)
         let { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editProjectMembersModalIsOpen, settingsGearToggle, profileModalToggle, editTaskToggle, editSectionToggle, showSpinner, removeModalToggle, removeType, editProjectToggle } = this.state
-        let { profile, profile2, projects, uid } = this.props;
-        this.profile = profile2?profile2[uid]?profile2[uid]:profile:profile;
-        let profileProjs = profile2?profile2[uid]?profile2[uid]["projects"].filter((proj)=>{
+        let { profile, userDetails, projects, uid } = this.props;
+        this.profile = userDetails?userDetails[uid]?userDetails[uid]:profile:profile;
+        let profileProjs = userDetails?userDetails[uid]?userDetails[uid]["projects"].filter((proj)=>{
             if(proj["projectId"] === "Inbox" || proj["projectId"] === "Today") return proj
             return null
         }):null:null;
@@ -415,6 +424,12 @@ class DashboardContainer extends Component {
                 {/* SPINNER */}
                 { showSpinner && <CustomSpinner />}
                 {/* MODALS/POPUPS  */}
+                <EditMembersModal 
+                    isOpen={editProjectMembersModalIsOpen}
+                    toggleNewMembersModal={this.toggleEditProjectMembers}
+                    editMembers = {this.editMembers}
+                    userDetails={userDetails}
+                />
                 <AddProjectModal 
                     isOpen={newProjectModalIsOpen} 
                     toggleNewProjectModal={this.toggleNewProjectModal} 
@@ -465,6 +480,7 @@ class DashboardContainer extends Component {
                         editProjectToggle = {editProjectToggle} // editing project's id
                         updateToggle = {this.toggleEdit}
                         toggleRemove={this.toggleRemove}
+                        toggleEditProjectMembers = {this.toggleEditProjectMembers}
                         confirmEditTask = {this.confirmEditTask}
                         confirmEditSection = {this.confirmEditSection}
                         confirmEditProject = {this.confirmEditProject}
@@ -480,12 +496,12 @@ const mapStateToProps = (state, props) =>{
     // console.log(state, props)
     let uid = state.authReducer["uid"]
     let profile = state.firebase.profile
-    let profile2 = state.firestore["data"]["userDetails"];
+    let userDetails = state.firestore["data"]["userDetails"];
     return {
-        profile2,
+        userDetails,
         profile,
         uid,
-        fetchProjects: async (firebase) => props.dispatch(fetchProjects(profile2?profile2[uid]:profile, firebase)), 
+        fetchProjects: async (firebase) => props.dispatch(fetchProjects(userDetails?userDetails[uid]:profile, firebase)), 
         projects: state.projectsReducer["projects"].map((proj)=>{
             return proj.data()
         })

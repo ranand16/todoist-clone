@@ -150,6 +150,17 @@ hr{
     left: 50%;
 }
 
+.editMembersSpan{
+    display: flex;
+    justify-content: space-between;
+}
+
+.editMembersSpan span {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
 /* Desktops and laptops ----------- */
 @media only screen  
 and (min-width : 1224px) {

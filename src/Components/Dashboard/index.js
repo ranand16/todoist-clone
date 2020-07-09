@@ -92,6 +92,11 @@ class Dashboard extends Component {
         }
     }
 
+    addMember = (project, e) => {
+        const { toggleEditProjectMembers } = this.props;
+        toggleEditProjectMembers(project);
+    }
+
     /**
      * This function is onchange handler for task/section name edit
      */
@@ -251,7 +256,6 @@ class Dashboard extends Component {
         const { projectToDisplay, editTaskToggle, editSectionToggle, editProjectToggle } = this.props
         const { addSectionForm, editedTaskValue, editedSectionValue, newSectionName, sectionHamToggle, projectHamToggle, editedProjectValue } = this.state
         if(!projectToDisplay) return <div className={"nocontents"}>No project selected</div>
-        console.log(editProjectToggle)
         return(
             <div className={"contents"}>
                 <div>
@@ -275,6 +279,7 @@ class Dashboard extends Component {
                                     <DropdownMenu>
                                         <DropdownItem><span onClick={this.editToogle.bind(this, null, null, null, null, projectToDisplay)}>Edit</span></DropdownItem>
                                         <DropdownItem><span onClick={this.removeToogle.bind(this, null, null, projectToDisplay)}>Remove</span></DropdownItem>
+                                        <DropdownItem><span onClick={this.addMember.bind(this, projectToDisplay)}>Add member</span></DropdownItem>
                                     </DropdownMenu>
                                 </ButtonDropdown>}
                             </h2>
