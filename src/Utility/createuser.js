@@ -3,9 +3,9 @@
  * @param {uid that returned from the signup funtion} uid 
  * @param {firestore instance to create a unique id in this function} firestore 
  */
-const creatNewUser = (uid, email, firestore) => {
+const creatNewUser = (name, uid, email, firestore) => {
     return {
-        firstName: null,
+        firstName: name,
         lastName: null,
         userEmail: email,
         projects: [

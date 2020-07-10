@@ -12,7 +12,8 @@ class SignUp extends Component {
         super(props)
         this.signUpDetails = {
             signUpEmail: null,
-            signUpPassword: null
+            signUpPassword: null,
+            name: null
         }
         console.log(props)
     }
@@ -20,6 +21,7 @@ class SignUp extends Component {
         e.preventDefault();
         this.signUpDetails["signUpEmail"] = document.getElementById('signUpEmail').value
         this.signUpDetails["signUpPassword"] = document.getElementById('signUpPassword').value
+        this.signUpDetails["name"] = document.getElementById('name').value
         this.signUpDetails["isNewUser"] = true
         this.props.fetchUserDetails(this.signUpDetails, this.props.firebase, creatNewUser).then((res)=>{
             console.log(res)
@@ -35,6 +37,10 @@ class SignUp extends Component {
                         <Form onSubmit={this.onSignUp} style={{ width: "100%" }}>
                             <h3>Sign up</h3>
                             <br/>
+                            <FormGroup>
+                                <Label for="name">Name</Label>
+                                <Input type="text" name="name" className="form-field" id="name" placeholder="Full name" required/>
+                            </FormGroup>
                             <FormGroup>
                                 <Label for="signUpEmail">Email</Label>
                                 <Input type="text" name="email" className="form-field" id="signUpEmail" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" placeholder="Email" required/>
