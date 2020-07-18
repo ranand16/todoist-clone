@@ -429,6 +429,7 @@ class DashboardContainer extends Component {
                     toggleNewMembersModal={this.toggleEditProjectMembers}
                     editMembers = {this.editMembers}
                     userDetails={userDetails}
+                    profile={profile}
                 />
                 <AddProjectModal 
                     isOpen={newProjectModalIsOpen} 

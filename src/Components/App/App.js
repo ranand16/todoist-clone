@@ -22,7 +22,7 @@ class App extends React.Component {
     }
 
     componentDidMount(){
-        let user = JSON.parse(window.localStorage.getItem("newUser"));
+        // let user = JSON.parse(window.localStorage.getItem("newUser"));
     }
     render(){
         const { isSignedIn } = this.state;

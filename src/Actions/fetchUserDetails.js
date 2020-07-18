@@ -11,9 +11,10 @@ const fetchUserDetails = (newUser, fb, createNewUser) => {
         // console.log("This is sign up.")
         return async (dispatch) => {
             let signUpResponse =  await _firebaseRef.auth().createUserWithEmailAndPassword(newUser["signUpEmail"], newUser["signUpPassword"])
-            const newUserObj = createNewUser(signUpResponse["user"]["uid"], signUpResponse["user"]["email"], _firestoreRef)
+            const newUserObj = createNewUser(newUser["name"], signUpResponse["user"]["uid"], signUpResponse["user"]["email"], _firestoreRef)
             const userDetailsRes = await _firestoreRef.collection("userDetails").doc(signUpResponse["user"]["uid"]).set(newUserObj)
             dispatch({ type: "FETCH_USER_DETAILS", newUser: {data: newUserObj, uid: signUpResponse["user"]["uid"]} })
+            window.localStorage.setItem("newUser", JSON.stringify({ data: newUserObj, uid: signUpResponse["user"]["uid"] }))
         }
     } else { // its a signin function
         // console.log("This is sign in.")
@@ -21,6 +22,7 @@ const fetchUserDetails = (newUser, fb, createNewUser) => {
             let signInResponse =  await _firebaseRef.auth().signInWithEmailAndPassword(newUser["signInEmail"], newUser["signInPassword"])
             const userDetailsRes = await _firestoreRef.collection("userDetails").doc(signInResponse["user"]["uid"]).get()
             dispatch({ type: "FETCH_USER_DETAILS", newUser: { data: userDetailsRes.data(), uid: signInResponse["user"]["uid"] }  })
+            window.localStorage.setItem("newUser", JSON.stringify({ data: userDetailsRes.data(), uid: signInResponse["user"]["uid"] }))
         }
     }
 }
