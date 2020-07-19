@@ -268,9 +268,9 @@ class Dashboard extends Component {
                                             <Input name="projectNameEdit" value={editedProjectValue} onChange={this.editedProjectValue} onKeyDown={this.editedProjectKeyValue.bind(this, projectToDisplay)} autoFocus />
                                             <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="projectNameEdit" href={this.block}>cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, null, null)} name="projectNameEdit" href={this.block}>confirm</a>.</span>
                                         </div>
-                                    :<span onClick={(projectToDisplay["projectId"]!=="Today"&&projectToDisplay["projectId"]!=="Inbox")?this.editToogle.bind(this, null, null, null, null, projectToDisplay):this.block}>{projectToDisplay["projectId"]}</span>                                            
+                                    :<span onClick={(!projectToDisplay["projectId"] && !projectToDisplay["projectId"])?this.editToogle.bind(this, null, null, null, null, projectToDisplay):this.block}>{projectToDisplay["projectId"]}</span>                                            
                                 :""}
-                                {(projectToDisplay["projectId"]!=="Today" && projectToDisplay["projectId"]!=="Inbox") && <ButtonDropdown className={"dropDwonMwnu"} isOpen={projectHamToggle} toggle={this.toggleProjectHamToggle.bind(this, projectToDisplay["projectId"])}>
+                                {(!projectToDisplay["isToday"] && !projectToDisplay["isInbox"]) && <ButtonDropdown className={"dropDwonMwnu"} isOpen={projectHamToggle} toggle={this.toggleProjectHamToggle.bind(this, projectToDisplay["projectId"])}>
                                     <DropdownToggle style={{ color: "grey" }} color="link">
                                         <svg className="bi bi-three-dots-vertical" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                             <path fillRule="evenodd" d="M9.5 13a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0-5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm0-5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" clipRule="evenodd"/>
@@ -355,7 +355,7 @@ class Dashboard extends Component {
                             </div>
                         )
                     }):null:null}
-                    {projectToDisplay["projectId"]!=="Today"?<div className="addSectionLayout">
+                    {!projectToDisplay["isToday"]?<div className="addSectionLayout">
                         <button onClick={this.toggleAddSection}><span></span>Add Section</button>
                     </div>:""}
                     {

@@ -402,6 +402,12 @@ class DashboardContainer extends Component {
         return await updateUserDetails(currentUser.uid, newUser)
     }
 
+    editMembers = async (collaborators, viewers) => {
+        console.log(collaborators, viewers)
+        
+        return {collaborators, viewers}
+    } 
+
     render(){
         // console.log(this.props, this.state)
         let { selectedProj, newTaskModalIsOpen, newProjectModalIsOpen, editProjectMembersModalIsOpen, settingsGearToggle, profileModalToggle, editTaskToggle, editSectionToggle, showSpinner, removeModalToggle, removeType, editProjectToggle } = this.state
@@ -419,18 +425,20 @@ class DashboardContainer extends Component {
         let projectToDisplay = dispProjects.find((proj)=>{
             return proj["id"] === selectedProj
         })
+        console.log(projectToDisplay);
         return (
             <>
                 {/* SPINNER */}
                 { showSpinner && <CustomSpinner />}
                 {/* MODALS/POPUPS  */}
-                <EditMembersModal 
+                { !projectToDisplay["isToday"] && !projectToDisplay["isInbox"] && <EditMembersModal 
                     isOpen={editProjectMembersModalIsOpen}
                     toggleNewMembersModal={this.toggleEditProjectMembers}
                     editMembers = {this.editMembers}
                     userDetails={userDetails}
                     profile={profile}
-                />
+                    projectToDisplay={projectToDisplay}
+                />}
                 <AddProjectModal 
                     isOpen={newProjectModalIsOpen} 
                     toggleNewProjectModal={this.toggleNewProjectModal} 

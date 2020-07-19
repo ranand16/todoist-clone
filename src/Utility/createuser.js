@@ -12,12 +12,14 @@ const creatNewUser = (name, uid, email, firestore) => {
             {
                 "projectId":"Inbox",
                 "id": firestore.collection("userDetails").doc().id,
-                "sections": []
+                "sections": [],
+                "isInbox": true
             },
             {
                 "projectId": "Today",
                 "id": firestore.collection("userDetails").doc().id,
-                "sections": []
+                "sections": [],
+                "isToday": true
             }
         ]
     }
