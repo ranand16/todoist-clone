@@ -494,7 +494,7 @@ class DashboardContainer extends Component {
                         confirmEditSection = {this.confirmEditSection}
                         confirmEditProject = {this.confirmEditProject}
                     />
-                    <RightPane />
+                    {/* <RightPane /> */}
                 </div>
             </>
         )
