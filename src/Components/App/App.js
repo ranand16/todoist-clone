@@ -38,8 +38,6 @@ class App extends React.Component {
     }
 }
 
-
-
 const mapStateToProps = state =>  {
     // console.log(state.firebase)
     return { auth: state.firebase.auth }

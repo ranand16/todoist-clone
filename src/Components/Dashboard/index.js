@@ -266,7 +266,7 @@ class Dashboard extends Component {
                                     editProjectToggle?
                                         <div>
                                             <Input name="projectNameEdit" value={editedProjectValue} onChange={this.editedProjectValue} onKeyDown={this.editedProjectKeyValue.bind(this, projectToDisplay)} autoFocus />
-                                            <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="projectNameEdit" href={this.block}>cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, null, null)} name="projectNameEdit" href={this.block}>confirm</a>.</span>
+                                            <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="projectNameEdit">cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, null, null)} name="projectNameEdit">confirm</a>.</span>
                                         </div>
                                     :<span onClick={(!projectToDisplay["projectId"] && !projectToDisplay["projectId"])?this.editToogle.bind(this, null, null, null, null, projectToDisplay):this.block}>{projectToDisplay["projectId"]}</span>                                            
                                 :""}
@@ -293,7 +293,7 @@ class Dashboard extends Component {
                                     {(editSectionToggle===i && (editTaskToggle===false || editTaskToggle===null))?
                                         <div>
                                             <Input name="sectionNameEdit" value={editedSectionValue} onChange={this.editedSectionValue} onKeyDown={this.editedSectionKeyValue.bind(this, section)} autoFocus />
-                                            <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="sectionNameEdit" href={this.block}>cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, null, section)} name="sectionNameEdit" href={this.block}>confirm</a>.</span>
+                                            <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="sectionNameEdit" >cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, null, section)} name="sectionNameEdit">confirm</a>.</span>
                                         </div>:
                                         <span onClick={this.editToogle.bind(this, section, i, null, null, null)}>{section["name"]}</span>
                                     }
@@ -320,7 +320,7 @@ class Dashboard extends Component {
                                             {(editTaskToggle===j && editSectionToggle===i)?
                                                 <div>
                                                     <Input  name="taskConfirmEdit" value={editedTaskValue} onChange={this.editedTaskValue} onKeyDown={this.editedTaskKeyValue.bind(this, task)} autoFocus />
-                                                    <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="taskCancelEdit" href={this.block}>cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, task)} name="taskConfirmEdit" href={this.block}>confirm</a>.</span>
+                                                    <span className={"editSubtext"}>Press Esc to <a onClick={this.cancelEdit} name="taskCancelEdit">cancel</a> and Enter to <a onClick={this.confirmEdit.bind(this, task)} name="taskConfirmEdit">confirm</a>.</span>
                                                 </div> : <span onClick={this.editToogle.bind(this, section, i, task, j, null)} className={"taskName"}>{task["task"]}</span>
                                             }
                                             {(editTaskToggle===j && editSectionToggle===i)?<></>:<span className="taskActions">
@@ -363,7 +363,7 @@ class Dashboard extends Component {
                         <div className="addSectionForm">
                             <Input onChange={this.newSectionValueOnChange} value={newSectionName}/>
                             <Button onClick={this.addNewSection} className="commonBtn" disabled={newSectionName===""}>Add section</Button>
-                            <a onClick={this.toggleAddSection} href={this.block} className="alert-link">Cancel</a>
+                            <a onClick={this.toggleAddSection} className="alert-link">Cancel</a>
                         </div>
                     }
                 </div>
